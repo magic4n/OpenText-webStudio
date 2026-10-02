@@ -6,8 +6,8 @@
 
 A bilingual (English & Russian) ASCII / ANSI banner generator and terminal animation engine. Available as a zero-dependency Material You single-page web app and a standalone Python CLI tool.
 
-You can try it here right now!
-Link: opentext.luna-app.space
+[Try it right now!](https://opentext.luna-app.space)
+
 ---
 
 ## Features
@@ -35,7 +35,7 @@ Link: opentext.luna-app.space
 ## Quick Start
 
 ### Web Application
-Recommended: Open opentext.luna-app.space
+[Recommended: Open opentext.luna-app.space](https://opentext.luna-app.space)
 
 OR
 
