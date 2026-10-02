@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenText Studio — ASCII & ANSI Art Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['"Fira Code"', 'Consolas', 'monospace']
+          },
+          colors: {
+            m3: {
+              surface: 'var(--md-surface)',
+              surfaceDim: 'var(--md-surface-dim)',
+              surfaceContainer: 'var(--md-surface-container)',
+              surfaceContainerHigh: 'var(--md-surface-container-high)',
+              surfaceContainerHighest: 'var(--md-surface-container-highest)',
+              onSurface: 'var(--md-on-surface)',
+              onSurfaceVariant: 'var(--md-on-surface-variant)',
+              outline: 'var(--md-outline)',
+              outlineVariant: 'var(--md-outline-variant)',
+              primary: 'var(--md-primary)',
+              onPrimary: 'var(--md-on-primary)',
+              primaryContainer: 'var(--md-primary-container)',
+              onPrimaryContainer: 'var(--md-on-primary-container)',
+              secondary: 'var(--md-secondary)',
+              secondaryContainer: 'var(--md-secondary-container)',
+              onSecondaryContainer: 'var(--md-on-secondary-container)',
+              tertiary: 'var(--md-tertiary)',
+              tertiaryContainer: 'var(--md-tertiary-container)',
+              error: 'var(--md-error)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --md-surface: #fdf8fd;
+      --md-surface-dim: #ded8e0;
+      --md-surface-container: #f7f2fa;
+      --md-surface-container-high: #f1ecf4;
+      --md-surface-container-highest: #ebe6ee;
+      --md-on-surface: #1d1b20;
+      --md-on-surface-variant: #49454e;
+      --md-outline: #7a757f;
+      --md-outline-variant: #cac4cf;
+      --md-primary: #6750a4;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #eaddff;
+      --md-on-primary-container: #21005d;
+      --md-secondary: #625b71;
+      --md-secondary-container: #e8def8;
+      --md-on-secondary-container: #1d192b;
+      --md-tertiary: #7d5260;
+      --md-tertiary-container: #ffd8e4;
+      --md-error: #ba1a1a;
+      --term-bg: #0f1117;
+      --term-fg: #e2e8f0;
+    }
+    .dark {
+      --md-surface: #141218;
+      --md-surface-dim: #141218;
+      --md-surface-container: #211f26;
+      --md-surface-container-high: #2b2930;
+      --md-surface-container-highest: #36343b;
+      --md-on-surface: #e6e0e9;
+      --md-on-surface-variant: #cac4d0;
+      --md-outline: #948f99;
+      --md-outline-variant: #49454e;
+      --md-primary: #d0bcff;
+      --md-on-primary: #381e72;
+      --md-primary-container: #4f378b;
+      --md-on-primary-container: #eaddff;
+      --md-secondary: #ccc2dc;
+      --md-secondary-container: #4a4458;
+      --md-on-secondary-container: #e8def8;
+      --md-tertiary: #efb8c8;
+      --md-tertiary-container: #633b48;
+      --md-error: #ffb4ab;
+      --term-bg: #090b10;
+      --term-fg: #f1f5f9;
+    }
+    body {
+      background-color: var(--md-surface);
+      color: var(--md-on-surface);
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background-color: var(--md-outline-variant);
+      border-radius: 9999px;
+    }
+    .crt-glow {
+      text-shadow: 0 0 4px rgba(74, 222, 128, 0.4), 0 0 10px rgba(56, 189, 248, 0.25);
+    }
+    .crt-scanlines {
+      background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+      ), linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.03),
+        rgba(0, 255, 0, 0.01),
+        rgba(0, 0, 255, 0.03)
+      );
+      background-size: 100% 3px, 6px 100%;
+    }
+    .seg-btn[data-active="true"] {
+      background-color: var(--md-secondary-container);
+      color: var(--md-on-secondary-container);
+      font-weight: 600;
+    }
+    .tab-btn[data-active="true"] {
+      color: var(--md-primary);
+      border-bottom-color: var(--md-primary);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-m3-primary selection:text-m3-onPrimary">
+
+  <header class="sticky top-0 z-40 bg-m3-surfaceContainer/90 backdrop-blur border-b border-m3-outlineVariant/40 px-4 lg:px-8 py-3 transition-colors">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-m3-primaryContainer flex items-center justify-center text-m3-onPrimaryContainer shadow-sm">
+          <span class="material-symbols-outlined text-2xl">terminal</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-bold tracking-tight">OpenText Studio</h1>
+            <span class="text-[10px] font-mono tracking-widest px-2 py-0.5 rounded-full bg-m3-surfaceContainerHighest text-m3-outline font-semibold">M3 WEB</span>
+          </div>
+          <p class="text-xs text-m3-onSurfaceVariant">ASCII & ANSI Art & Animation Engine</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-mono">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Project:</span>
+          <span id="headerProjectId" class="font-bold text-m3-primary">00000</span>
+        </div>
+
+        <button id="themeToggleBtn" type="button" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-m3-surfaceContainerHigh active:scale-95 transition-all text-m3-onSurfaceVariant">
+          <span class="material-symbols-outlined" id="themeIcon">light_mode</span>
+        </button>
+
+        <button id="generateZipBtnTop" type="button" class="flex items-center gap-2 px-4 py-2 rounded-full bg-m3-primary text-m3-onPrimary hover:opacity-90 active:scale-95 shadow-sm text-sm font-medium transition-all">
+          <span class="material-symbols-outlined text-lg">folder_zip</span>
+          <span class="hidden md:inline">Download Studio ZIP</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="bg-m3-surface border-b border-m3-outlineVariant/30 px-4 lg:px-8">
+    <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto custom-scroll">
+      <button class="tab-btn flex items-center gap-2 px-5 py-3 border-b-2 border-transparent text-sm font-medium text-m3-onSurfaceVariant transition-all whitespace-nowrap" data-tab="studio" data-active="true">
+        <span class="material-symbols-outlined text-lg">design_services</span>
+        <span>Studio Canvas</span>
+      </button>
+      <button class="tab-btn flex items-center gap-2 px-5 py-3 border-b-2 border-transparent text-sm font-medium text-m3-onSurfaceVariant transition-all whitespace-nowrap" data-tab="explorer" data-active="false">
+        <span class="material-symbols-outlined text-lg">account_tree</span>
+        <span>Project Files (Tree)</span>
+      </button>
+      <button class="tab-btn flex items-center gap-2 px-5 py-3 border-b-2 border-transparent text-sm font-medium text-m3-onSurfaceVariant transition-all whitespace-nowrap" data-tab="export" data-active="false">
+        <span class="material-symbols-outlined text-lg">code</span>
+        <span>Export & Embed</span>
+      </button>
+    </div>
+  </nav>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 flex flex-col gap-6">
+
+    <section class="p-4 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 shadow-sm flex flex-col md:flex-row items-center gap-4">
+      <div class="w-full flex-1 relative">
+        <label for="textInput" class="text-[11px] font-semibold tracking-wider text-m3-outline uppercase px-2 mb-1 block">Input Text (ENG + RUS)</label>
+        <div class="relative flex items-center">
+          <input id="textInput" type="text" value="OPENTEXT" maxlength="32" class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant rounded-2xl px-4 py-3 text-base font-mono tracking-wide focus:outline-none focus:border-m3-primary transition-all pr-10 text-m3-onSurface" placeholder="Type text here...">
+          <button id="clearInputBtn" type="button" class="absolute right-3 text-m3-outline hover:text-m3-onSurface">
+            <span class="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="w-full md:w-auto flex flex-col justify-end">
+        <span class="text-[11px] font-semibold tracking-wider text-m3-outline uppercase px-2 mb-1 block">Quick Presets</span>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">OPENTEXT</button>
+          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">ПРИВЕТ</button>
+          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">CYBER</button>
+          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">MATRIX</button>
+          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">2026</button>
+          <button id="regenProjectBtn" type="button" title="Regenerate Project ID" class="p-2 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all text-xs flex items-center justify-center">
+            <span class="material-symbols-outlined text-sm">refresh</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div id="tabStudio" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-5">
+        
+        <div class="p-5 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-2 border-b border-m3-outlineVariant/30">
+            <span class="text-xs font-bold tracking-wider uppercase text-m3-outline flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">font_download</span> Typography & Shape
+            </span>
+          </div>
+
+          <div>
+            <label class="text-xs font-medium text-m3-onSurfaceVariant mb-2 block">Font Family</label>
+            <div class="grid grid-cols-2 p-1 rounded-2xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40">
+              <button id="fontBtn5x5" type="button" class="seg-btn py-2 px-3 rounded-xl text-xs text-center transition-all" data-font="5x5" data-active="true">5x5 Bitmap</button>
+              <button id="fontBtnShadow" type="button" class="seg-btn py-2 px-3 rounded-xl text-xs text-center transition-all" data-font="shadow" data-active="false">ANSI Shadow</button>
+            </div>
+          </div>
+
+          <div id="glyphControlsBlock" class="flex flex-col gap-3">
+            <div>
+              <label class="text-xs font-medium text-m3-onSurfaceVariant mb-1.5 block">Fill Glyph Character</label>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="█">█</button>
+                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="#">#</button>
+                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="@">@</button>
+                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="▓">▓</button>
+                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="*">*</button>
+                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="▲">▲</button>
+                <input id="customGlyphInput" type="text" maxlength="2" value="█" class="w-12 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-center font-mono text-sm focus:outline-none focus:border-m3-primary">
+              </div>
+            </div>
+
+            <div>
+              <label class="text-xs font-medium text-m3-onSurfaceVariant mb-1.5 block">Scale Factor</label>
+              <div class="grid grid-cols-3 p-1 rounded-2xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40">
+                <button type="button" class="scale-btn seg-btn py-1.5 text-xs rounded-xl" data-scale="1" data-active="true">1x</button>
+                <button type="button" class="scale-btn seg-btn py-1.5 text-xs rounded-xl" data-scale="2" data-active="false">2x</button>
+                <button type="button" class="scale-btn seg-btn py-1.5 text-xs rounded-xl" data-scale="3" data-active="false">3x</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-m3-outlineVariant/30 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-base text-m3-outline">crop_free</span>
+              <span class="text-xs font-medium">Border Framing (Box)</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input id="frameBoxToggle" type="checkbox" class="sr-only peer">
+              <div class="w-11 h-6 bg-m3-surfaceContainerHighest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-m3-primary"></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-2 border-b border-m3-outlineVariant/30">
+            <span class="text-xs font-bold tracking-wider uppercase text-m3-outline flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">palette</span> Color & Shading
+            </span>
+          </div>
+
+          <div>
+            <label class="text-xs font-medium text-m3-onSurfaceVariant mb-2 block">Color Palette Mode</label>
+            <div class="grid grid-cols-3 p-1 rounded-2xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40">
+              <button type="button" class="color-mode-btn seg-btn py-1.5 text-xs rounded-xl" data-mode="solid" data-active="false">Solid 16</button>
+              <button type="button" class="color-mode-btn seg-btn py-1.5 text-xs rounded-xl" data-mode="gradient" data-active="true">Gradient</button>
+              <button type="button" class="color-mode-btn seg-btn py-1.5 text-xs rounded-xl" data-mode="perrow" data-active="false">Per-Row</button>
+            </div>
+          </div>
+
+          <div id="solidColorSelector" class="hidden flex-col gap-2">
+            <label class="text-xs font-medium text-m3-onSurfaceVariant block">Select ANSI 16 Color</label>
+            <div class="grid grid-cols-4 gap-2" id="solidColorGrid"></div>
+          </div>
+
+          <div id="gradientColorSelector" class="flex flex-col gap-2">
+            <label class="text-xs font-medium text-m3-onSurfaceVariant block">Select Gradient Scheme</label>
+            <div class="grid grid-cols-2 gap-2" id="gradientSchemeGrid"></div>
+          </div>
+        </div>
+
+        <div class="p-5 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-2 border-b border-m3-outlineVariant/30">
+            <span class="text-xs font-bold tracking-wider uppercase text-m3-outline flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">movie</span> Animation Mode
+            </span>
+          </div>
+
+          <div>
+            <label for="animTypeSelect" class="text-xs font-medium text-m3-onSurfaceVariant mb-1.5 block">Select Preset Motion</label>
+            <select id="animTypeSelect" class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 rounded-2xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-m3-primary">
+              <option value="none">Static Rendering (None)</option>
+              <option value="typewriter">Typewriter (Char-by-Char)</option>
+              <option value="pulse">Pulse (Palette Cycle)</option>
+              <option value="rainbow_sweep" selected>Rainbow Sweep (Continuous)</option>
+              <option value="fade_in">Fade In (Dim to Bright)</option>
+              <option value="slide_left">Slide Left (Shift Pad)</option>
+              <option value="blink">Blink (Terminal Flashing)</option>
+              <option value="row_by_row">Row By Row (Vertical Sweep)</option>
+              <option value="wave">Wave (Color Sine Shift)</option>
+              <option value="sparkle">Sparkle (Random Reveal)</option>
+              <option value="gradient_cycle">Gradient Cycle (Horizontal Wave)</option>
+              <option value="logo_animated">Logo Box Animated (Framed Reveal)</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
+        
+        <div class="rounded-3xl border border-m3-outlineVariant/50 overflow-hidden shadow-2xl flex flex-col" style="background-color: var(--term-bg);">
+          
+          <div class="px-5 py-3.5 bg-black/40 border-b border-white/10 flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+              </div>
+              <span class="text-xs font-mono text-slate-400 pl-2">studio@opentext: ~/project/text</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="crtToggleBtn" type="button" class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono text-slate-300 hover:bg-white/10 transition-all flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">tv</span> CRT Glow
+              </button>
+
+              <button id="copyTerminalTextBtn" type="button" class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono text-slate-300 hover:bg-white/10 transition-all flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">content_copy</span> Copy
+              </button>
+            </div>
+          </div>
+
+          <div id="terminalScreenContainer" class="relative min-h-[380px] p-6 font-mono text-sm leading-tight overflow-x-auto custom-scroll flex items-center justify-center">
+            <div id="crtOverlay" class="pointer-events-none absolute inset-0 crt-scanlines opacity-40"></div>
+            <pre id="terminalOutput" class="relative z-10 font-mono whitespace-pre select-text transition-all crt-glow text-left"></pre>
+          </div>
+
+          <div class="px-5 py-3.5 bg-black/40 border-t border-white/10 flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-2">
+              <button id="playPauseBtn" type="button" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-m3-primary text-m3-onPrimary text-xs font-medium hover:opacity-90 active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-base" id="playPauseIcon">pause</span>
+                <span id="playPauseText">Pause</span>
+              </button>
+              <button id="restartAnimBtn" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 text-white text-xs font-medium hover:bg-white/20 active:scale-95 transition-all">
+                <span class="material-symbols-outlined text-base">replay</span>
+                <span>Restart</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-mono text-slate-400">Speed:</span>
+              <div class="flex items-center gap-1">
+                <button type="button" class="speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-white/10 text-slate-300 hover:bg-white/20" data-speed="0.5">0.5x</button>
+                <button type="button" class="speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-m3-primary text-m3-onPrimary font-bold" data-speed="1.0">1.0x</button>
+                <button type="button" class="speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-white/10 text-slate-300 hover:bg-white/20" data-speed="2.0">2.0x</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <button id="quickCopyPlain" type="button" class="p-3.5 rounded-2xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 hover:bg-m3-surfaceContainerHigh flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95">
+            <span class="material-symbols-outlined text-m3-primary text-xl">text_fields</span>
+            <span class="text-xs font-semibold">Plain Text</span>
+            <span class="text-[10px] text-m3-outline">No ANSI escapes</span>
+          </button>
+
+          <button id="quickCopyAnsi" type="button" class="p-3.5 rounded-2xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 hover:bg-m3-surfaceContainerHigh flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95">
+            <span class="material-symbols-outlined text-m3-primary text-xl">terminal</span>
+            <span class="text-xs font-semibold">Raw ANSI</span>
+            <span class="text-[10px] text-m3-outline">Terminal escape codes</span>
+          </button>
+
+          <button id="quickCopyHtml" type="button" class="p-3.5 rounded-2xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 hover:bg-m3-surfaceContainerHigh flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95">
+            <span class="material-symbols-outlined text-m3-primary text-xl">html</span>
+            <span class="text-xs font-semibold">HTML Spans</span>
+            <span class="text-[10px] text-m3-outline">Ready for web pages</span>
+          </button>
+
+          <button id="quickCopyPyEmbed" type="button" class="p-3.5 rounded-2xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 hover:bg-m3-surfaceContainerHigh flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95">
+            <span class="material-symbols-outlined text-m3-primary text-xl">data_object</span>
+            <span class="text-xs font-semibold">Python Embed</span>
+            <span class="text-[10px] text-m3-outline">Standalone runnable code</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="tabExplorer" class="tab-content hidden flex-col gap-6">
+      
+      <div class="flex items-center justify-between flex-wrap gap-4 p-4 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-m3-secondaryContainer text-m3-onSecondaryContainer flex items-center justify-center">
+            <span class="material-symbols-outlined">folder_open</span>
+          </div>
+          <div>
+            <h2 class="text-sm font-bold tracking-tight">Virtual Studio Project Files</h2>
+            <p class="text-xs text-m3-onSurfaceVariant">Mirroring python build() layout: <span id="explorerProjectPath" class="font-mono font-semibold">00000/</span> with text/ and anim/</p>
+          </div>
+        </div>
+
+        <button id="downloadZipFromExplorer" type="button" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-m3-primary text-m3-onPrimary text-xs font-medium hover:opacity-90 active:scale-95 shadow transition-all">
+          <span class="material-symbols-outlined text-base">download_for_offline</span>
+          <span>Download Project as .ZIP</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <div class="lg:col-span-4 p-4 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-3">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-m3-outline px-2">Project Hierarchy</span>
+          
+          <div class="flex flex-col gap-1 font-mono text-xs" id="fileTreeContainer">
+          </div>
+        </div>
+
+        <div class="lg:col-span-8 flex flex-col gap-3">
+          <div class="p-4 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-m3-primary" id="currentFileIcon">description</span>
+              <span id="currentFileName" class="text-xs font-mono font-bold">solid.txt</span>
+              <span id="currentFileSize" class="text-[10px] px-2 py-0.5 rounded-full bg-m3-surfaceContainerHighest text-m3-outline">0 bytes</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button id="copyActiveFileBtn" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-medium hover:bg-m3-surfaceContainerHighest transition-all">
+                <span class="material-symbols-outlined text-sm">content_copy</span> Copy File
+              </button>
+              <button id="downloadActiveFileBtn" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-m3-primary text-m3-onPrimary text-xs font-medium hover:opacity-90 transition-all">
+                <span class="material-symbols-outlined text-sm">download</span> Download
+              </button>
+            </div>
+          </div>
+
+          <div class="relative rounded-3xl border border-m3-outlineVariant/50 overflow-hidden shadow-inner" style="background-color: var(--term-bg);">
+            <div class="px-4 py-2 bg-black/40 border-b border-white/10 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <span id="fileViewerPath">00000/text/solid.txt</span>
+              <span>UTF-8</span>
+            </div>
+            <pre id="fileViewerCode" class="p-5 font-mono text-xs text-slate-200 overflow-x-auto custom-scroll whitespace-pre min-h-[380px] max-h-[560px]"></pre>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="tabExport" class="tab-content hidden flex-col gap-6">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="p-6 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-m3-primaryContainer text-m3-onPrimaryContainer flex items-center justify-center">
+                <span class="material-symbols-outlined text-base">integration_instructions</span>
+              </div>
+              <h3 class="text-sm font-bold">Python Integration Snippet</h3>
+            </div>
+            <button id="copyPythonSnippetBtn" type="button" class="px-3 py-1 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-medium hover:bg-m3-surfaceContainerHighest">Copy</button>
+          </div>
+          <p class="text-xs text-m3-onSurfaceVariant">Embed the generated ASCII animation into any Python command-line utility or microservice.</p>
+          <pre id="pythonSnippetBox" class="p-4 rounded-2xl bg-black/60 border border-white/10 text-emerald-400 font-mono text-xs overflow-x-auto custom-scroll whitespace-pre"></pre>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-m3-secondaryContainer text-m3-onSecondaryContainer flex items-center justify-center">
+                <span class="material-symbols-outlined text-base">code_blocks</span>
+              </div>
+              <h3 class="text-sm font-bold">HTML & CSS Embed</h3>
+            </div>
+            <button id="copyHtmlSnippetBtn" type="button" class="px-3 py-1 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-medium hover:bg-m3-surfaceContainerHighest">Copy</button>
+          </div>
+          <p class="text-xs text-m3-onSurfaceVariant">Colored spans ready for insertion into dark-mode developer portals, docs, or web footers.</p>
+          <pre id="htmlSnippetBox" class="p-4 rounded-2xl bg-black/60 border border-white/10 text-sky-300 font-mono text-xs overflow-x-auto custom-scroll whitespace-pre max-h-[220px]"></pre>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-m3-tertiaryContainer text-m3-onTertiaryContainer flex items-center justify-center">
+                <span class="material-symbols-outlined text-base">terminal</span>
+              </div>
+              <h3 class="text-sm font-bold">Bash / ANSI Shell File</h3>
+            </div>
+            <button id="downloadBashBtn" type="button" class="px-3 py-1 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-medium hover:bg-m3-surfaceContainerHighest">Download .sh</button>
+          </div>
+          <p class="text-xs text-m3-onSurfaceVariant">Run directly with <code class="font-mono text-m3-primary">cat banner.txt</code> in bash or zsh terminal.</p>
+          <pre id="bashSnippetBox" class="p-4 rounded-2xl bg-black/60 border border-white/10 text-amber-300 font-mono text-xs overflow-x-auto custom-scroll whitespace-pre"></pre>
+        </div>
+
+        <div class="p-6 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-m3-primaryContainer text-m3-onPrimaryContainer flex items-center justify-center">
+                <span class="material-symbols-outlined text-base">folder_zip</span>
+              </div>
+              <h3 class="text-sm font-bold">Complete Studio Package</h3>
+            </div>
+            <button id="downloadZipFromTab" type="button" class="px-3 py-1 rounded-full bg-m3-primary text-m3-onPrimary text-xs font-medium hover:opacity-90">Download ZIP</button>
+          </div>
+          <p class="text-xs text-m3-onSurfaceVariant">Packages all 9 static text files and 11 standalone Python animations with README instructions.</p>
+          <div class="p-4 rounded-2xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-3xl text-m3-primary">inventory_2</span>
+              <div>
+                <p class="text-xs font-mono font-bold" id="zipNameLabel">opentext_studio_00000.zip</p>
+                <p class="text-[10px] text-m3-outline">20 files total (text/ and anim/)</p>
+              </div>
+            </div>
+            <span class="text-xs font-mono text-emerald-500 font-bold">Ready</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="mt-auto border-t border-m3-outlineVariant/30 bg-m3-surfaceContainer px-4 py-4 text-center text-xs text-m3-onSurfaceVariant">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>OpenText Studio &bull; Full Material You 3 Web Port (ENG + RUS fonts supported)</p>
+      <p class="font-mono text-[11px] text-m3-outline">Standard ANSI 16 + 24-bit Virtual Gradients</p>
+    </div>
+  </footer>
+
+  <div id="toastMessage" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-5 py-3 rounded-full bg-m3-inverseSurface text-m3-inverseOnSurface shadow-xl text-xs font-medium" style="background-color: #313033; color: #f4eff4;">
+    <span class="material-symbols-outlined text-sm text-emerald-400" id="toastIcon">check_circle</span>
+    <span id="toastText">Action successful</span>
+  </div>
+
+  <script>
+    const FONT_5X5 = {
+      'A':["01110","10001","11111","10001","10001"],
+      'B':["11110","10001","11110","10001","11110"],
+      'C':["01111","10000","10000","10000","01111"],
+      'D':["11110","10001","10001","10001","11110"],
+      'E':["11111","10000","11110","10000","11111"],
+      'F':["11111","10000","11110","10000","10000"],
+      'G':["01111","10000","10111","10001","01111"],
+      'H':["10001","10001","11111","10001","10001"],
+      'I':["11111","00100","00100","00100","11111"],
+      'J':["00111","00010","00010","10010","01100"],
+      'K':["10001","10010","11100","10010","10001"],
+      'L':["10000","10000","10000","10000","11111"],
+      'M':["10001","11011","10101","10001","10001"],
+      'N':["10001","11001","10101","10011","10001"],
+      'O':["01110","10001","10001","10001","01110"],
+      'P':["11110","10001","11110","10000","10000"],
+      'Q':["01110","10001","10101","10010","01101"],
+      'R':["11110","10001","11110","10010","10001"],
+      'S':["01111","10000","01110","00001","11110"],
+      'T':["11111","00100","00100","00100","00100"],
+      'U':["10001","10001","10001","10001","01110"],
+      'V':["10001","10001","10001","01010","00100"],
+      'W':["10001","10001","10101","11011","10001"],
+      'X':["10001","01010","00100","01010","10001"],
+      'Y':["10001","01010","00100","00100","00100"],
+      'Z':["11111","00010","00100","01000","11111"],
+      '0':["01110","10011","10101","11001","01110"],
+      '1':["00100","01100","00100","00100","01110"],
+      '2':["01110","10001","00110","01000","11111"],
+      '3':["11110","00001","01110","00001","11110"],
+      '4':["00010","00110","01010","11111","00010"],
+      '5':["11111","10000","11110","00001","11110"],
+      '6':["01110","10000","11110","10001","01110"],
+      '7':["11111","00001","00010","00100","01000"],
+      '8':["01110","10001","01110","10001","01110"],
+      '9':["01110","10001","01111","00001","01110"],
+      ' ':["00000","00000","00000","00000","00000"],
+      '.':["00000","00000","00000","00000","00100"],
+      ',':["00000","00000","00000","00100","01000"],
+      '!':["00100","00100","00100","00000","00100"],
+      '?':["01110","10001","00110","00000","00100"],
+      '-':["00000","00000","11111","00000","00000"],
+      '_':["00000","00000","00000","00000","11111"],
+      ':':["00000","00100","00000","00100","00000"],
+      '+':["00000","00100","11111","00100","00000"],
+      '/':["00001","00010","00100","01000","10000"],
+      'А':["01110","10001","11111","10001","10001"],
+      'Б':["11111","10000","11110","10001","11110"],
+      'В':["11110","10001","11110","10001","11110"],
+      'Г':["11111","10000","10000","10000","10000"],
+      'Д':["00110","01010","01010","11111","10001"],
+      'Е':["11111","10000","11110","10000","11111"],
+      'Ё':["01010","11111","10000","11110","11111"],
+      'Ж':["10101","10101","11111","10101","10101"],
+      'З':["11110","00001","01110","00001","11110"],
+      'И':["10001","10011","10101","11001","10001"],
+      'Й':["01010","10011","10101","11001","10001"],
+      'К':["10001","10010","11100","10010","10001"],
+      'Л':["00110","01010","01010","01010","10001"],
+      'М':["10001","11011","10101","10001","10001"],
+      'Н':["10001","10001","11111","10001","10001"],
+      'О':["01110","10001","10001","10001","01110"],
+      'П':["11111","10001","10001","10001","10001"],
+      'Р':["11110","10001","11110","10000","10000"],
+      'С':["01111","10000","10000","10000","01111"],
+      'Т':["11111","00100","00100","00100","00100"],
+      'У':["10001","10001","01111","00001","11110"],
+      'Ф':["00100","01110","10101","11111","01110"],
+      'Х':["10001","01010","00100","01010","10001"],
+      'Ц':["10001","10001","10001","11111","00001"],
+      'Ч':["10001","10001","01111","00001","00001"],
+      'Ш':["10101","10101","10101","10101","11111"],
+      'Щ':["10101","10101","10101","11111","00001"],
+      'Ъ':["11000","01000","01110","01001","01110"],
+      'Ы':["10001","10001","11101","10011","11101"],
+      'Ь':["10000","10000","11110","10001","11110"],
+      'Э':["01110","10001","00111","10001","01110"],
+      'Ю':["10100","10110","11101","10101","10110"],
+      'Я':["01111","10001","01111","00101","10001"],
+    };
+
+    const SHADOW_FONT = {
+      'A':[" █████╗ ","██╔══██╗","███████║","██╔══██║","██║  ██║","╚═╝  ╚═╝"],
+      'B':["██████╗ ","██╔══██╗","██████╔╝","██╔══██╗","██████╔╝","╚═════╝ "],
+      'C':[" ██████╗","██╔════╝","██║     ","██║     ","╚██████╗"," ╚═════╝"],
+      'D':["██████╗ ","██╔══██╗","██║  ██║","██║  ██║","██████╔╝","╚═════╝ "],
+      'E':["███████╗","██╔════╝","█████╗  ","██╔══╝  ","███████╗","╚══════╝"],
+      'F':["███████╗","██╔════╝","█████╗  ","██╔══╝  ","██║     ","╚═╝     "],
+      'G':[" ██████╗ ","██╔════╝ ","██║  ███╗","██║   ██║","╚██████╔╝"," ╚═════╝ "],
+      'H':["██╗  ██╗","██║  ██║","███████║","██╔══██║","██║  ██║","╚═╝  ╚═╝"],
+      'I':["██╗","██║","██║","██║","██║","╚═╝"],
+      'J':["     ██╗","     ██║","     ██║","██   ██║","╚█████╔╝"," ╚════╝ "],
+      'K':["██╗  ██╗","██║ ██╔╝","█████╔╝ ","██╔═██╗ ","██║  ██╗","╚═╝  ╚═╝"],
+      'L':["██╗     ","██║     ","██║     ","██║     ","███████╗","╚══════╝"],
+      'M':["███╗   ███╗","████╗ ████║","██╔████╔██║","██║╚██╔╝██║","██║ ╚═╝ ██║","╚═╝     ╚═╝"],
+      'N':["███╗   ██╗","████╗  ██║","██╔██╗ ██║","██║╚██╗██║","██║ ╚████║","╚═╝  ╚═══╝"],
+      'O':[" ██████╗ ","██╔═══██╗","██║   ██║","██║   ██║","╚██████╔╝"," ╚═════╝ "],
+      'P':["██████╗ ","██╔══██╗","██████╔╝","██╔═══╝ ","██║     ","╚═╝     "],
+      'Q':[" ██████╗ ","██╔═══██╗","██║   ██║","██║▄▄ ██║","╚██████╔╝"," ╚══▀▀═╝ "],
+      'R':["██████╗ ","██╔══██╗","██████╔╝","██╔══██╗","██║  ██║","╚═╝  ╚═╝"],
+      'S':["███████╗","██╔════╝","███████╗","╚════██║","███████║","╚══════╝"],
+      'T':["████████╗","╚══██╔══╝","   ██║   ","   ██║   ","   ██║   ","   ╚═╝   "],
+      'U':["██╗   ██╗","██║   ██║","██║   ██║","██║   ██║","╚██████╔╝"," ╚═════╝ "],
+      'V':["██╗   ██╗","██║   ██║","██║   ██║","╚██╗ ██╔╝"," ╚████╔╝ ","  ╚═══╝  "],
+      'W':["██╗    ██╗","██║    ██║","██║ █╗ ██║","██║███╗██║","╚███╔███╔╝"," ╚══╝╚══╝ "],
+      'X':["██╗  ██╗","╚██╗██╔╝"," ╚███╔╝ "," ██╔██╗ ","██╔╝ ██╗","╚═╝  ╚═╝"],
+      'Y':["██╗   ██╗","╚██╗ ██╔╝"," ╚████╔╝ ","  ╚██╔╝  ","   ██║   ","   ╚═╝   "],
+      'Z':["███████╗","╚══███╔╝","  ███╔╝ "," ███╔╝  ","███████╗","╚══════╝"],
+      '0':[" ██████╗ ","██╔═████╗","██║██╔██║","████╔╝██║","╚██████╔╝"," ╚═════╝ "],
+      '1':[" ██╗","███║","╚██║"," ██║"," ██║"," ╚═╝"],
+      '2':["██████╗ ","╚════██╗"," █████╔╝","██╔═══╝ ","███████╗","╚══════╝"],
+      '3':["██████╗ ","╚════██╗"," █████╔╝"," ╚═══██╗","██████╔╝","╚═════╝ "],
+      '4':["██╗  ██╗","██║  ██║","███████║","╚════██║","     ██║","     ╚═╝"],
+      '5':["███████╗","██╔════╝","███████╗","╚════██║","███████║","╚══════╝"],
+      '6':[" ██████╗ ","██╔════╝ ","███████╗ ","██╔═══██╗","╚██████╔╝"," ╚═════╝ "],
+      '7':["███████╗","╚════██║","    ██╔╝","   ██╔╝ ","   ██║  ","   ╚═╝  "],
+      '8':[" █████╗ ","██╔══██╗","╚█████╔╝","██╔══██╗","╚█████╔╝"," ╚════╝ "],
+      '9':[" █████╗ ","██╔══██╗","╚██████║"," ╚═══██║"," █████╔╝"," ╚════╝ "],
+      ' ':["        ","        ","        ","        ","        ","        "],
+      '!':["██╗","██║","██║","╚═╝","██╗","╚═╝"],
+      '?':[" ██████╗ ","██╔═══██╗","     ██╔╝","    ██╔╝ ","    ╚═╝  ","    ██╗  "],
+      '.':["   ","   ","   ","   ","██╗","╚═╝"],
+      ',':["   ","   ","   ","   ","██╗","╚═╝"],
+      '-':["       ","       ","██████╗","╚═════╝","       ","       "],
+      ':':["   ","██╗","╚═╝","██╗","╚═╝","   "]
+    };
+
+    const ANSI_16_MAP = {
+      "black": { code: 30, hex: "#1e1e1e", label: "Black" },
+      "red": { code: 31, hex: "#ef4444", label: "Red" },
+      "green": { code: 32, hex: "#22c55e", label: "Green" },
+      "yellow": { code: 33, hex: "#eab308", label: "Yellow" },
+      "blue": { code: 34, hex: "#3b82f6", label: "Blue" },
+      "magenta": { code: 35, hex: "#d946ef", label: "Magenta" },
+      "cyan": { code: 36, hex: "#06b6d4", label: "Cyan" },
+      "white": { code: 37, hex: "#e2e8f0", label: "White" },
+      "bright_black": { code: 90, hex: "#64748b", label: "Bright Black" },
+      "bright_red": { code: 91, hex: "#f87171", label: "Bright Red" },
+      "bright_green": { code: 92, hex: "#4ade80", label: "Bright Green" },
+      "bright_yellow": { code: 93, hex: "#fde047", label: "Bright Yellow" },
+      "bright_blue": { code: 94, hex: "#60a5fa", label: "Bright Blue" },
+      "bright_magenta": { code: 95, hex: "#f472b6", label: "Bright Magenta" },
+      "bright_cyan": { code: 96, hex: "#38bdf8", label: "Bright Cyan" },
+      "bright_white": { code: 97, hex: "#ffffff", label: "Bright White" }
+    };
+
+    const ANSI_CODE_TO_HEX = {
+      30: "#1e1e1e", 31: "#ef4444", 32: "#22c55e", 33: "#eab308",
+      34: "#3b82f6", 35: "#d946ef", 36: "#06b6d4", 37: "#e2e8f0",
+      90: "#64748b", 91: "#f87171", 92: "#4ade80", 93: "#fde047",
+      94: "#60a5fa", 95: "#f472b6", 96: "#38bdf8", 97: "#ffffff"
+    };
+
+    const GRADIENTS = {
+      "rainbow": { codes: [91, 93, 92, 96, 94, 95], label: "Rainbow" },
+      "fire": { codes: [91, 93, 33, 31], label: "Fire" },
+      "ocean": { codes: [94, 96, 36, 34], label: "Ocean" },
+      "forest": { codes: [92, 32, 36, 92], label: "Forest" },
+      "sunset": { codes: [91, 95, 35, 94], label: "Sunset" },
+      "cyberpunk": { codes: [95, 96, 92, 93], label: "Cyberpunk" }
+    };
+
+    const ANIM_PYTHON_TEMPLATES = {
+      "typewriter": `def _run(delay=0.004):
+    for line in ART:
+        for ch in line:
+            sys.stdout.write(ch)
+            sys.stdout.flush()
+            time.sleep(delay)
+        sys.stdout.write("\\n")
+    sys.stdout.flush()`,
+
+      "pulse": `def _run(interval=0.25, cycles=20):
+    for i in range(cycles):
+        code = COLORS[i % len(COLORS)]
+        sys.stdout.write("\\033[H\\033[J")
+        for line in ART:
+            sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (code, line))
+        sys.stdout.flush()
+        time.sleep(interval)`,
+
+      "rainbow_sweep": `def _run(interval=0.06, cycles=32):
+    offset = 0
+    for _ in range(cycles):
+        sys.stdout.write("\\033[H\\033[J")
+        for line in ART:
+            s = []
+            for i, ch in enumerate(line):
+                idx = (i + offset) % len(COLORS)
+                s.append("\\033[%dm%s" % (COLORS[idx], ch))
+            sys.stdout.write("".join(s) + "\\033[0m\\n")
+        sys.stdout.flush()
+        offset += 1
+        time.sleep(interval)`,
+
+      "fade_in": `def _run(hold=0.2):
+    for shade in (90, 37, 97):
+        sys.stdout.write("\\033[H\\033[J")
+        for line in ART:
+            sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (shade, line))
+        sys.stdout.flush()
+        time.sleep(hold)
+    sys.stdout.write("\\033[H\\033[J")
+    for line in ART:
+        sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[0], line))
+    sys.stdout.flush()`,
+
+      "slide_left": `def _run(delay=0.03):
+    width = max((len(l) for l in ART), default=0)
+    for pad in range(width, -1, -4):
+        sys.stdout.write("\\033[H\\033[J")
+        for line in ART:
+            sys.stdout.write("\\033[%dm%s%s\\033[0m\\n" % (COLORS[0], " " * pad, line))
+        sys.stdout.flush()
+        time.sleep(delay)
+    sys.stdout.write("\\033[H\\033[J")
+    for line in ART:
+        sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[0], line))
+    sys.stdout.flush()`,
+
+      "blink": `def _run(interval=0.35, cycles=10):
+    for i in range(cycles):
+        sys.stdout.write("\\033[H\\033[J")
+        code = COLORS[i % len(COLORS)] if (i % 2 == 0) else 30
+        for line in ART:
+            sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (code, line))
+        sys.stdout.flush()
+        time.sleep(interval)
+    sys.stdout.write("\\033[H\\033[J")
+    for line in ART:
+        sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[0], line))
+    sys.stdout.flush()`,
+
+      "row_by_row": `def _run(delay=0.12):
+    for line in ART:
+        sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[0], line))
+        sys.stdout.flush()
+        time.sleep(delay)`,
+
+      "wave": `def _run(delay=0.1, cycles=3):
+    for _ in range(cycles):
+        for phase in range(len(ART) + len(COLORS)):
+            sys.stdout.write("\\033[H\\033[J")
+            for i, line in enumerate(ART):
+                idx = (i + phase) % len(COLORS)
+                sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[idx], line))
+            sys.stdout.flush()
+            time.sleep(delay)`,
+
+      "sparkle": `def _run(delay=0.02, rounds=12):
+    import random as _r
+    targets = [(i, j) for i, l in enumerate(ART) for j, c in enumerate(l) if c != " "]
+    if not targets:
+        return
+    _r.shuffle(targets)
+    step = max(1, len(targets) // (rounds * 6))
+    revealed = set()
+    cur = 0
+    while cur < len(targets):
+        for _ in range(step):
+            if cur < len(targets):
+                revealed.add(targets[cur]); cur += 1
+        sys.stdout.write("\\033[H\\033[J")
+        for i, line in enumerate(ART):
+            s = []
+            for j, ch in enumerate(line):
+                if ch == " " or (i, j) in revealed:
+                    s.append("\\033[%dm%s" % (COLORS[0], ch))
+                else:
+                    s.append(" ")
+            sys.stdout.write("".join(s) + "\\033[0m\\n")
+        sys.stdout.flush()
+        time.sleep(delay)`,
+
+      "gradient_cycle": `def _run(interval=0.06, cycles=40):
+    offset = 0
+    for _ in range(cycles):
+        sys.stdout.write("\\033[H\\033[J")
+        for line in ART:
+            s = []
+            for i, ch in enumerate(line):
+                idx = (i + offset) % len(COLORS)
+                s.append("\\033[%dm%s" % (COLORS[idx], ch))
+            sys.stdout.write("".join(s) + "\\033[0m\\n")
+        sys.stdout.flush()
+        offset += 1
+        time.sleep(interval)`,
+
+      "logo_animated": `def _run(char_delay=0.0018, row_delay=0.05):
+    GRAY = "\\033[90m"
+    R = "\\033[0m"
+    inner = max((len(l) for l in ART), default=0) + 2
+
+    print()
+    sys.stdout.write(GRAY + "  ┌" + "─" * inner + "┐" + R + "\\n")
+    sys.stdout.write(GRAY + "  │" + R + " " * inner + GRAY + "│" + R + "\\n")
+
+    for i, line in enumerate(ART):
+        col = COLORS[i % len(COLORS)]
+        sys.stdout.write(GRAY + "  │" + R + "  ")
+        for ch in line:
+            sys.stdout.write(col + ch + R)
+            sys.stdout.flush()
+            time.sleep(char_delay)
+        pad = inner - 2 - len(line)
+        if pad < 0:
+            pad = 0
+        sys.stdout.write(" " * pad)
+        sys.stdout.write(GRAY + "│" + R + "\\n")
+        time.sleep(row_delay)
+
+    sys.stdout.write(GRAY + "  │" + R + " " * inner + GRAY + "│" + R + "\\n")
+    sys.stdout.write(GRAY + "  └" + "─" * inner + "┘" + R + "\\n")
+    print()`
+    };
+
+    let state = {
+      projectId: "48291",
+      text: "OPENTEXT",
+      font: "5x5",
+      fillChar: "█",
+      scale: 1,
+      framed: false,
+      colorMode: "gradient",
+      solidColor: "bright_green",
+      gradient: "rainbow",
+      animType: "rainbow_sweep",
+      isPlaying: true,
+      speed: 1.0,
+      animFrameId: null,
+      animStep: 0,
+      animPhase: 0,
+      sparkleRevealed: new Set(),
+      activeTab: "studio",
+      selectedFileKey: "text/solid.txt",
+      virtualFiles: {}
+    };
+
+    function generateRandomProjectId() {
+      return String(Math.floor(10000 + Math.random() * 90000));
+    }
+
+    function render5x5(text, fillChar, scale) {
+      scale = Math.max(1, parseInt(scale) || 1);
+      const rows = ["", "", "", "", ""];
+      const upper = (text || "A").toUpperCase();
+      for (let i = 0; i < upper.length; i++) {
+        const ch = upper[i];
+        const bm = FONT_5X5[ch] || FONT_5X5['?'] || ["00000","00000","00000","00000","00000"];
+        for (let r = 0; r < 5; r++) {
+          rows[r] += bm[r] + " ";
+        }
+      }
+      const out = [];
+      for (let r = 0; r < 5; r++) {
+        let scaledRow = "";
+        for (let c = 0; c < rows[r].length; c++) {
+          const charToRepeat = (rows[r][c] === '1') ? fillChar : ' ';
+          scaledRow += charToRepeat.repeat(scale);
+        }
+        for (let s = 0; s < scale; s++) {
+          out.push(scaledRow);
+        }
+      }
+      return out;
+    }
+
+    function renderShadow(text) {
+      const rows = ["", "", "", "", "", ""];
+      const upper = (text || "A").toUpperCase();
+      for (let i = 0; i < upper.length; i++) {
+        const ch = upper[i];
+        const glyph = SHADOW_FONT[ch];
+        if (glyph) {
+          for (let r = 0; r < 6; r++) {
+            rows[r] += glyph[r];
+          }
+        } else {
+          const bm = FONT_5X5[ch] || FONT_5X5['?'];
+          const up = [];
+          for (let r = 0; r < 5; r++) {
+            let rowStr = "";
+            for (let c = 0; c < bm[r].length; c++) {
+              rowStr += (bm[r][c] === '1' ? '██' : '  ');
+            }
+            up.push(rowStr);
+            up.push(rowStr);
+          }
+          for (let r = 0; r < 6; r++) {
+            rows[r] += up[r + 2] + " ";
+          }
+        }
+      }
+      return rows;
+    }
+
+    function addBoxFrame(plainLines) {
+      const inner = Math.max(...plainLines.map(l => l.length), 0) + 2;
+      const top = "┌" + "─".repeat(inner) + "┐";
+      const spaceLine = "│" + " ".repeat(inner) + "│";
+      const out = [top, spaceLine];
+      for (const line of plainLines) {
+        const pad = Math.max(0, inner - 2 - line.length);
+        out.push("│  " + line + " ".repeat(pad) + "│");
+      }
+      out.push(spaceLine);
+      out.push("└" + "─".repeat(inner) + "┘");
+      return out;
+    }
+
+    function getCurrentPlainLines() {
+      let lines = (state.font === "shadow") ? renderShadow(state.text) : render5x5(state.text, state.fillChar, state.scale);
+      if (state.framed) {
+        lines = addBoxFrame(lines);
+      }
+      return lines;
+    }
+
+    function getColorCodes() {
+      if (state.colorMode === "solid") {
+        return [ANSI_16_MAP[state.solidColor].code];
+      }
+      return GRADIENTS[state.gradient].codes;
+    }
+
+    function linesToHtml(lines, colorMode, codes) {
+      const htmlRows = [];
+      const isFramed = state.framed;
+      for (let r = 0; r < lines.length; r++) {
+        const line = lines[r];
+        if (isFramed && (r === 0 || r === 1 || r === lines.length - 1 || r === lines.length - 2)) {
+          htmlRows.push(`<span style="color: #64748b">${escapeHtml(line)}</span>`);
+          continue;
+        }
+
+        if (colorMode === "solid") {
+          const hex = ANSI_CODE_TO_HEX[codes[0]];
+          if (isFramed) {
+            const leftBorder = `<span style="color: #64748b">│  </span>`;
+            const rightBorder = `<span style="color: #64748b">│</span>`;
+            const content = line.substring(3, line.length - 1);
+            htmlRows.push(`${leftBorder}<span style="color: ${hex}">${escapeHtml(content)}</span>${rightBorder}`);
+          } else {
+            htmlRows.push(`<span style="color: ${hex}">${escapeHtml(line)}</span>`);
+          }
+        } else if (colorMode === "perrow") {
+          const hex = ANSI_CODE_TO_HEX[codes[r % codes.length]];
+          if (isFramed) {
+            const leftBorder = `<span style="color: #64748b">│  </span>`;
+            const rightBorder = `<span style="color: #64748b">│</span>`;
+            const content = line.substring(3, line.length - 1);
+            htmlRows.push(`${leftBorder}<span style="color: ${hex}">${escapeHtml(content)}</span>${rightBorder}`);
+          } else {
+            htmlRows.push(`<span style="color: ${hex}">${escapeHtml(line)}</span>`);
+          }
+        } else {
+          if (isFramed) {
+            const leftBorder = `<span style="color: #64748b">│  </span>`;
+            const rightBorder = `<span style="color: #64748b">│</span>`;
+            const content = line.substring(3, line.length - 1);
+            const charsHtml = [];
+            for (let c = 0; c < content.length; c++) {
+              let idx = Math.floor((c * codes.length) / (content.length || 1));
+              if (idx >= codes.length) idx = codes.length - 1;
+              const hex = ANSI_CODE_TO_HEX[codes[idx]];
+              charsHtml.push(`<span style="color: ${hex}">${escapeHtml(content[c])}</span>`);
+            }
+            htmlRows.push(`${leftBorder}${charsHtml.join("")}${rightBorder}`);
+          } else {
+            const charsHtml = [];
+            for (let c = 0; c < line.length; c++) {
+              let idx = Math.floor((c * codes.length) / (line.length || 1));
+              if (idx >= codes.length) idx = codes.length - 1;
+              const hex = ANSI_CODE_TO_HEX[codes[idx]];
+              charsHtml.push(`<span style="color: ${hex}">${escapeHtml(line[c])}</span>`);
+            }
+            htmlRows.push(charsHtml.join(""));
+          }
+        }
+      }
+      return htmlRows.join("\n");
+    }
+
+    function linesToAnsi(lines, colorMode, codes) {
+      const out = [];
+      const isFramed = state.framed;
+      for (let r = 0; r < lines.length; r++) {
+        const line = lines[r];
+        if (isFramed && (r === 0 || r === 1 || r === lines.length - 1 || r === lines.length - 2)) {
+          out.push(`\x1b[90m${line}\x1b[0m`);
+          continue;
+        }
+
+        if (colorMode === "solid") {
+          const code = codes[0];
+          if (isFramed) {
+            const content = line.substring(3, line.length - 1);
+            out.push(`\x1b[90m│  \x1b[${code}m${content}\x1b[90m│\x1b[0m`);
+          } else {
+            out.push(`\x1b[${code}m${line}\x1b[0m`);
+          }
+        } else if (colorMode === "perrow") {
+          const code = codes[r % codes.length];
+          if (isFramed) {
+            const content = line.substring(3, line.length - 1);
+            out.push(`\x1b[90m│  \x1b[${code}m${content}\x1b[90m│\x1b[0m`);
+          } else {
+            out.push(`\x1b[${code}m${line}\x1b[0m`);
+          }
+        } else {
+          if (isFramed) {
+            const content = line.substring(3, line.length - 1);
+            const buf = ["\x1b[90m│  "];
+            for (let c = 0; c < content.length; c++) {
+              let idx = Math.floor((c * codes.length) / (content.length || 1));
+              if (idx >= codes.length) idx = codes.length - 1;
+              buf.push(`\x1b[${codes[idx]}m${content[c]}`);
+            }
+            buf.push("\x1b[90m│\x1b[0m");
+            out.push(buf.join(""));
+          } else {
+            const buf = [];
+            for (let c = 0; c < line.length; c++) {
+              let idx = Math.floor((c * codes.length) / (line.length || 1));
+              if (idx >= codes.length) idx = codes.length - 1;
+              buf.push(`\x1b[${codes[idx]}m${line[c]}`);
+            }
+            buf.push("\x1b[0m");
+            out.push(buf.join(""));
+          }
+        }
+      }
+      return out.join("\n");
+    }
+
+    function escapeHtml(str) {
+      return (str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    let animTimer = null;
+    let animIteration = 0;
+
+    function startAnimationLoop() {
+      if (animTimer) clearTimeout(animTimer);
+      if (state.animType === "none" || !state.isPlaying) {
+        renderStaticTerminal();
+        return;
+      }
+
+      state.animStep = 0;
+      state.animPhase = 0;
+      animIteration = 0;
+      state.sparkleRevealed = new Set();
+
+      function step() {
+        if (!state.isPlaying) return;
+        renderAnimationFrame();
+        const delay = getAnimationDelay();
+        animTimer = setTimeout(step, Math.max(16, delay / state.speed));
+      }
+      step();
+    }
+
+    function getAnimationDelay() {
+      switch (state.animType) {
+        case "typewriter": return 12;
+        case "pulse": return 260;
+        case "rainbow_sweep": return 55;
+        case "fade_in": return 280;
+        case "slide_left": return 40;
+        case "blink": return 320;
+        case "row_by_row": return 140;
+        case "wave": return 90;
+        case "sparkle": return 35;
+        case "gradient_cycle": return 50;
+        case "logo_animated": return 25;
+        default: return 100;
+      }
+    }
+
+    function renderStaticTerminal() {
+      const lines = getCurrentPlainLines();
+      const codes = getColorCodes();
+      const html = linesToHtml(lines, state.colorMode, codes);
+      document.getElementById("terminalOutput").innerHTML = html;
+    }
+
+    function renderAnimationFrame() {
+      const terminalEl = document.getElementById("terminalOutput");
+      const plainLines = getCurrentPlainLines();
+      const codes = getColorCodes();
+      const numLines = plainLines.length;
+      const maxWidth = Math.max(...plainLines.map(l => l.length), 0);
+
+      switch (state.animType) {
+        case "typewriter": {
+          let totalChars = 0;
+          plainLines.forEach(l => totalChars += l.length);
+          state.animStep++;
+          if (state.animStep > totalChars + 20) {
+            state.animStep = 0;
+          }
+          let charsLeft = state.animStep;
+          const displayLines = [];
+          for (let r = 0; r < numLines; r++) {
+            const line = plainLines[r];
+            if (charsLeft <= 0) {
+              displayLines.push("");
+            } else if (charsLeft >= line.length) {
+              displayLines.push(line);
+              charsLeft -= line.length;
+            } else {
+              displayLines.push(line.substring(0, charsLeft));
+              charsLeft = 0;
+            }
+          }
+          terminalEl.innerHTML = linesToHtml(displayLines, state.colorMode, codes);
+          break;
+        }
+
+        case "pulse": {
+          state.animPhase++;
+          const curCode = codes[state.animPhase % codes.length];
+          const hex = ANSI_CODE_TO_HEX[curCode];
+          const html = plainLines.map(l => `<span style="color: ${hex}">${escapeHtml(l)}</span>`).join("\n");
+          terminalEl.innerHTML = html;
+          break;
+        }
+
+        case "rainbow_sweep": {
+          state.animPhase++;
+          const htmlRows = [];
+          for (let r = 0; r < numLines; r++) {
+            const line = plainLines[r];
+            const chars = [];
+            for (let c = 0; c < line.length; c++) {
+              const codeIdx = (c + state.animPhase) % codes.length;
+              const hex = ANSI_CODE_TO_HEX[codes[codeIdx]];
+              chars.push(`<span style="color: ${hex}">${escapeHtml(line[c])}</span>`);
+            }
+            htmlRows.push(chars.join(""));
+          }
+          terminalEl.innerHTML = htmlRows.join("\n");
+          break;
+        }
+
+        case "fade_in": {
+          state.animPhase = (state.animPhase + 1) % 5;
+          const shades = [90, 37, 97, codes[0], codes[0]];
+          const activeCode = shades[state.animPhase];
+          const hex = ANSI_CODE_TO_HEX[activeCode] || "#ffffff";
+          terminalEl.innerHTML = plainLines.map(l => `<span style="color: ${hex}">${escapeHtml(l)}</span>`).join("\n");
+          break;
+        }
+
+        case "slide_left": {
+          if (state.animStep === undefined) state.animStep = maxWidth;
+          state.animStep -= 3;
+          if (state.animStep < 0) {
+            animIteration++;
+            if (animIteration > 15) {
+              state.animStep = maxWidth;
+              animIteration = 0;
+            } else {
+              state.animStep = 0;
+            }
+          }
+          const pad = Math.max(0, state.animStep);
+          const hex = ANSI_CODE_TO_HEX[codes[0]];
+          const html = plainLines.map(l => `<span style="color: ${hex}">${escapeHtml(" ".repeat(pad) + l)}</span>`).join("\n");
+          terminalEl.innerHTML = html;
+          break;
+        }
+
+        case "blink": {
+          state.animPhase = (state.animPhase + 1) % 2;
+          const hex = (state.animPhase === 0) ? ANSI_CODE_TO_HEX[codes[0]] : "#1e1e1e";
+          terminalEl.innerHTML = plainLines.map(l => `<span style="color: ${hex}">${escapeHtml(l)}</span>`).join("\n");
+          break;
+        }
+
+        case "row_by_row": {
+          state.animStep = (state.animStep + 1) % (numLines + 8);
+          const visibleRows = Math.min(numLines, state.animStep);
+          const displayLines = [];
+          for (let r = 0; r < numLines; r++) {
+            if (r < visibleRows) displayLines.push(plainLines[r]);
+            else displayLines.push("");
+          }
+          terminalEl.innerHTML = linesToHtml(displayLines, state.colorMode, codes);
+          break;
+        }
+
+        case "wave": {
+          state.animPhase++;
+          const htmlRows = [];
+          for (let r = 0; r < numLines; r++) {
+            const code = codes[(r + state.animPhase) % codes.length];
+            const hex = ANSI_CODE_TO_HEX[code];
+            htmlRows.push(`<span style="color: ${hex}">${escapeHtml(plainLines[r])}</span>`);
+          }
+          terminalEl.innerHTML = htmlRows.join("\n");
+          break;
+        }
+
+        case "sparkle": {
+          const targets = [];
+          for (let r = 0; r < numLines; r++) {
+            for (let c = 0; c < plainLines[r].length; c++) {
+              if (plainLines[r][c] !== ' ') {
+                targets.push(`${r},${c}`);
+              }
+            }
+          }
+          if (state.sparkleRevealed.size >= targets.length) {
+            animIteration++;
+            if (animIteration > 20) {
+              state.sparkleRevealed.clear();
+              animIteration = 0;
+            }
+          } else {
+            const batch = Math.max(2, Math.floor(targets.length / 15));
+            for (let b = 0; b < batch; b++) {
+              const unrevealed = targets.filter(t => !state.sparkleRevealed.has(t));
+              if (unrevealed.length > 0) {
+                const pick = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+                state.sparkleRevealed.add(pick);
+              }
+            }
+          }
+
+          const hex = ANSI_CODE_TO_HEX[codes[0]];
+          const htmlRows = [];
+          for (let r = 0; r < numLines; r++) {
+            const chars = [];
+            for (let c = 0; c < plainLines[r].length; c++) {
+              if (plainLines[r][c] === ' ' || state.sparkleRevealed.has(`${r},${c}`)) {
+                chars.push(escapeHtml(plainLines[r][c]));
+              } else {
+                chars.push(" ");
+              }
+            }
+            htmlRows.push(`<span style="color: ${hex}">${chars.join("")}</span>`);
+          }
+          terminalEl.innerHTML = htmlRows.join("\n");
+          break;
+        }
+
+        case "gradient_cycle": {
+          state.animPhase++;
+          const htmlRows = [];
+          for (let r = 0; r < numLines; r++) {
+            const line = plainLines[r];
+            const chars = [];
+            for (let c = 0; c < line.length; c++) {
+              const idx = (c + state.animPhase) % codes.length;
+              const hex = ANSI_CODE_TO_HEX[codes[idx]];
+              chars.push(`<span style="color: ${hex}">${escapeHtml(line[c])}</span>`);
+            }
+            htmlRows.push(chars.join(""));
+          }
+          terminalEl.innerHTML = htmlRows.join("\n");
+          break;
+        }
+
+        case "logo_animated": {
+          const inner = maxWidth + 2;
+          state.animStep++;
+          let totalChars = 0;
+          plainLines.forEach(l => totalChars += l.length);
+          if (state.animStep > totalChars + 25) {
+            state.animStep = 0;
+          }
+
+          let charsLeft = state.animStep;
+          const htmlRows = [];
+          htmlRows.push(`<span style="color: #64748b">  ┌${"─".repeat(inner)}┐</span>`);
+          htmlRows.push(`<span style="color: #64748b">  │${" ".repeat(inner)}│</span>`);
+
+          for (let r = 0; r < numLines; r++) {
+            const line = plainLines[r];
+            const col = ANSI_CODE_TO_HEX[codes[r % codes.length]];
+            let slice = "";
+            if (charsLeft <= 0) {
+              slice = "";
+            } else if (charsLeft >= line.length) {
+              slice = line;
+              charsLeft -= line.length;
+            } else {
+              slice = line.substring(0, charsLeft);
+              charsLeft = 0;
+            }
+            const pad = Math.max(0, inner - 2 - slice.length);
+            htmlRows.push(`<span style="color: #64748b">  │  </span><span style="color: ${col}">${escapeHtml(slice)}</span><span style="color: #64748b">${" ".repeat(pad)}│</span>`);
+          }
+
+          htmlRows.push(`<span style="color: #64748b">  │${" ".repeat(inner)}│</span>`);
+          htmlRows.push(`<span style="color: #64748b">  └${"─".repeat(inner)}┘</span>`);
+          terminalEl.innerHTML = htmlRows.join("\n");
+          break;
+        }
+
+        default:
+          renderStaticTerminal();
+          break;
+      }
+    }
+
+    function buildVirtualProject() {
+      const text = state.text || "OPENTEXT";
+      const files = {};
+
+      const staticSpecs = [
+        ["solid.txt", "#", 1, "solid", "bright_green"],
+        ["hash.txt", "#", 1, "solid", "bright_cyan"],
+        ["at.txt", "@", 1, "solid", "bright_yellow"],
+        ["shade.txt", "▓", 1, "gradient", "fire"],
+        ["star.txt", "*", 1, "gradient", "rainbow"],
+        ["solid_big.txt", "█", 2, "gradient", "ocean"]
+      ];
+
+      for (const [fname, fillChar, scale, mode, name] of staticSpecs) {
+        const plain = render5x5(text, fillChar, scale);
+        const codes = (mode === "solid") ? [ANSI_16_MAP[name].code] : GRADIENTS[name].codes;
+        files[`text/${fname}`] = linesToAnsi(plain, mode, codes);
+      }
+
+      const shPlain = renderShadow(text);
+      files["text/shadow.txt"] = linesToAnsi(shPlain, "gradient", GRADIENTS["ocean"].codes);
+      files["text/shadow_rainbow.txt"] = linesToAnsi(shPlain, "perrow", GRADIENTS["rainbow"].codes);
+      files["text/shadow_box.txt"] = linesToAnsi(addBoxFrame(shPlain), "gradient", GRADIENTS["rainbow"].codes);
+
+      const animSpecs = [
+        ["typewriter.py", "typewriter", "solid", "bright_green", 1],
+        ["pulse.py", "pulse", "gradient", "rainbow", 1],
+        ["rainbow_sweep.py", "rainbow_sweep", "gradient", "rainbow", 1],
+        ["fade_in.py", "fade_in", "solid", "bright_cyan", 1],
+        ["slide_left.py", "slide_left", "solid", "bright_yellow", 1],
+        ["blink.py", "blink", "gradient", "fire", 1],
+        ["row_by_row.py", "row_by_row", "solid", "bright_red", 1],
+        ["wave.py", "wave", "gradient", "ocean", 1],
+        ["sparkle.py", "sparkle", "solid", "bright_magenta", 1],
+        ["gradient_cycle.py", "gradient_cycle", "gradient", "rainbow", 1]
+      ];
+
+      for (const [fname, anim, mode, name, scale] of animSpecs) {
+        const plain = render5x5(text, "█", scale);
+        const colors = (mode === "solid") ? [ANSI_16_MAP[name].code] : GRADIENTS[name].codes;
+        const desc = (mode === "solid") ? `solid ${name}` : `gradient ${name}`;
+        files[`anim/${fname}`] = generatePythonScript(fname, anim, plain, desc, colors);
+      }
+
+      files["anim/logo_animated.py"] = generatePythonScript(
+        "logo_animated.py",
+        "logo_animated",
+        shPlain,
+        "per-row gradient rainbow (shadow font)",
+        GRADIENTS["rainbow"].codes
+      );
+
+      files["README.md"] = generateReadme();
+
+      state.virtualFiles = files;
+      updateExplorerUI();
+      updateSnippetsUI();
+    }
+
+    function generatePythonScript(filename, animType, plainLines, colorDesc, colors) {
+      const moduleName = filename.replace(/\.py$/, "");
+      const linesArrStr = plainLines.map(l => `    ${JSON.stringify(l)},`).join("\n");
+      const colorsArrStr = JSON.stringify(colors);
+      const body = ANIM_PYTHON_TEMPLATES[animType] || "";
+
+      return `#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+OpenText Studio - Generated Animation
+======================================
+Animation : ${animType}
+Color     : ${colorDesc}
+File      : ${filename}
+
+RUN STANDALONE:
+    python ${filename}
+
+EMBED INTO YOUR OWN SCRIPT:
+    import ${moduleName}
+    ${moduleName}.animate()
+"""
+
+__all__ = ["ART", "COLORS", "animate"]
+
+import sys
+import time
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
+if sys.platform == "win32":
+    try:
+        import ctypes
+        _k = ctypes.windll.kernel32
+        _k.SetConsoleMode(_k.GetStdHandle(-11), 7)
+    except Exception:
+        pass
+
+ART = [
+${linesArrStr}
+]
+
+COLORS = ${colorsArrStr}
+
+${body}
+
+def animate(**kwargs):
+    """Public entry point - call from your own code."""
+    return _run(**kwargs)
+
+if __name__ == "__main__":
+    try:
+        animate()
+    except KeyboardInterrupt:
+        sys.stdout.write("\\n")
+`;
+    }
+
+    function generateReadme() {
+      return `# OpenText Studio Project ${state.projectId}
+
+Generated with OpenText Studio Web Port.
+
+## Folder Structure
+- \`text/\`: Static colored ANSI text files.
+- \`anim/\`: Standalone and embeddable Python scripts with VT terminal animations.
+
+## Quick Run
+\`\`\`bash
+# View static art in terminal
+cat text/shadow.txt
+
+# Run Python animation
+python anim/rainbow_sweep.py
+python anim/logo_animated.py
+\`\`\`
+
+## Python Embed Example
+\`\`\`python
+import anim.logo_animated as banner
+banner.animate()
+\`\`\`
+`;
+    }
+
+    function updateExplorerUI() {
+      const container = document.getElementById("fileTreeContainer");
+      container.innerHTML = "";
+
+      const keys = Object.keys(state.virtualFiles).sort();
+      const groups = { "text": [], "anim": [], "root": [] };
+
+      for (const k of keys) {
+        if (k.startsWith("text/")) groups.text.push(k);
+        else if (k.startsWith("anim/")) groups.anim.push(k);
+        else groups.root.push(k);
+      }
+
+      function createFolderNode(name, items, icon) {
+        const wrap = document.createElement("div");
+        wrap.className = "flex flex-col gap-1 mb-2";
+        const header = document.createElement("div");
+        header.className = "flex items-center gap-1.5 text-m3-outline text-xs px-2 py-1 font-semibold";
+        header.innerHTML = `<span class="material-symbols-outlined text-sm">${icon}</span><span>${state.projectId}/${name}</span>`;
+        wrap.appendChild(header);
+
+        for (const item of items) {
+          const btn = document.createElement("button");
+          const isSelected = item === state.selectedFileKey;
+          btn.type = "button";
+          btn.className = `flex items-center gap-2 px-3 py-1.5 rounded-xl text-left transition-all ${
+            isSelected 
+              ? "bg-m3-primary text-m3-onPrimary font-bold shadow-sm" 
+              : "hover:bg-m3-surfaceContainerHighest text-m3-onSurface"
+          }`;
+          btn.innerHTML = `<span class="material-symbols-outlined text-xs">${item.endsWith('.py') ? 'terminal' : 'description'}</span><span>${item.split('/').pop()}</span>`;
+          btn.addEventListener("click", () => {
+            state.selectedFileKey = item;
+            updateExplorerUI();
+            displaySelectedFile();
+          });
+          wrap.appendChild(btn);
+        }
+        return wrap;
+      }
+
+      container.appendChild(createFolderNode("text/", groups.text, "folder"));
+      container.appendChild(createFolderNode("anim/", groups.anim, "terminal"));
+      if (groups.root.length > 0) {
+        container.appendChild(createFolderNode("", groups.root, "description"));
+      }
+
+      displaySelectedFile();
+    }
+
+    function displaySelectedFile() {
+      const content = state.virtualFiles[state.selectedFileKey] || "";
+      const fn = state.selectedFileKey.split('/').pop();
+      document.getElementById("currentFileName").textContent = fn;
+      document.getElementById("fileViewerPath").textContent = `${state.projectId}/${state.selectedFileKey}`;
+      document.getElementById("currentFileSize").textContent = `${content.length} chars`;
+      document.getElementById("explorerProjectPath").textContent = `${state.projectId}/`;
+      document.getElementById("fileViewerCode").textContent = content;
+      document.getElementById("currentFileIcon").textContent = fn.endsWith('.py') ? 'terminal' : 'description';
+    }
+
+    function updateSnippetsUI() {
+      const plain = getCurrentPlainLines();
+      const codes = getColorCodes();
+      const htmlCode = linesToHtml(plain, state.colorMode, codes);
+      const ansiCode = linesToAnsi(plain, state.colorMode, codes);
+
+      document.getElementById("pythonSnippetBox").textContent = `import time, sys
+
+ART = ${JSON.stringify(plain, null, 2)}
+COLORS = ${JSON.stringify(codes)}
+
+def show_banner():
+    for i, line in enumerate(ART):
+        code = COLORS[i % len(COLORS)]
+        sys.stdout.write(f"\\033[{code}m{line}\\033[0m\\n")
+    sys.stdout.flush()
+
+if __name__ == "__main__":
+    show_banner()`;
+
+      document.getElementById("htmlSnippetBox").textContent = `<pre style="background:#090b10; color:#fff; font-family:monospace; padding:16px; border-radius:12px; line-height:1.2;">
+${htmlCode}
+</pre>`;
+
+      document.getElementById("bashSnippetBox").textContent = `#!/usr/bin/env bash
+cat << 'EOF'
+${ansiCode}
+EOF`;
+
+      document.getElementById("zipNameLabel").textContent = `opentext_studio_${state.projectId}.zip`;
+    }
+
+    function copyToClipboard(text, successMsg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(successMsg);
+        }).catch(() => {
+          legacyCopy(text, successMsg);
+        });
+      } else {
+        legacyCopy(text, successMsg);
+      }
+    }
+
+    function legacyCopy(text, successMsg) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.top = "-9999px";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand("copy");
+        showToast(successMsg);
+      } catch (err) {
+        showToast("Failed to copy");
+      }
+      document.body.removeChild(ta);
+    }
+
+    function downloadFile(filename, content, mime) {
+      const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Downloaded ${filename}`);
+    }
+
+    async function downloadProjectZip() {
+      if (typeof JSZip === "undefined") {
+        showToast("JSZip library is still loading...");
+        return;
+      }
+      showToast("Packaging ZIP archive...");
+      const zip = new JSZip();
+      const rootFolder = zip.folder(state.projectId);
+      const textFolder = rootFolder.folder("text");
+      const animFolder = rootFolder.folder("anim");
+
+      for (const [path, content] of Object.entries(state.virtualFiles)) {
+        if (path.startsWith("text/")) {
+          textFolder.file(path.replace(/^text\//, ""), content);
+        } else if (path.startsWith("anim/")) {
+          animFolder.file(path.replace(/^anim\//, ""), content);
+        } else {
+          rootFolder.file(path, content);
+        }
+      }
+
+      const blob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `opentext_studio_${state.projectId}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Saved opentext_studio_${state.projectId}.zip`);
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById("toastMessage");
+      const textEl = document.getElementById("toastText");
+      textEl.textContent = msg;
+      toast.classList.remove("translate-y-20", "opacity-0");
+      toast.classList.add("translate-y-0", "opacity-100");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-20", "opacity-0");
+      }, 2500);
+    }
+
+    function initUI() {
+      state.projectId = generateRandomProjectId();
+      document.getElementById("headerProjectId").textContent = state.projectId;
+
+      const solidGrid = document.getElementById("solidColorGrid");
+      solidGrid.innerHTML = "";
+      for (const [key, obj] of Object.entries(ANSI_16_MAP)) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "flex items-center gap-1.5 p-2 rounded-xl border border-m3-outlineVariant/40 text-left transition-all hover:scale-[1.02] bg-m3-surfaceContainerHigh";
+        btn.dataset.colorKey = key;
+        btn.innerHTML = `<span class="w-3.5 h-3.5 rounded-full flex-shrink-0" style="background-color: ${obj.hex}; border: 1px solid rgba(255,255,255,0.2);"></span><span class="text-[10px] font-mono truncate text-m3-onSurface">${obj.label}</span>`;
+        btn.addEventListener("click", () => {
+          state.solidColor = key;
+          highlightSelectedSolidColor();
+          buildVirtualProject();
+          startAnimationLoop();
+        });
+        solidGrid.appendChild(btn);
+      }
+
+      const gradGrid = document.getElementById("gradientSchemeGrid");
+      gradGrid.innerHTML = "";
+      for (const [key, obj] of Object.entries(GRADIENTS)) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "p-2.5 rounded-xl border border-m3-outlineVariant/40 flex flex-col gap-1.5 text-left transition-all hover:scale-[1.02] bg-m3-surfaceContainerHigh";
+        btn.dataset.gradientKey = key;
+        const dots = obj.codes.map(c => `<span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${ANSI_CODE_TO_HEX[c]}"></span>`).join("");
+        btn.innerHTML = `<div class="flex items-center justify-between"><span class="text-xs font-semibold capitalize">${obj.label}</span></div><div class="flex items-center gap-1">${dots}</div>`;
+        btn.addEventListener("click", () => {
+          state.gradient = key;
+          highlightSelectedGradient();
+          buildVirtualProject();
+          startAnimationLoop();
+        });
+        gradGrid.appendChild(btn);
+      }
+
+      highlightSelectedSolidColor();
+      highlightSelectedGradient();
+
+      document.getElementById("textInput").addEventListener("input", (e) => {
+        state.text = e.target.value.trim() || "OPENTEXT";
+        buildVirtualProject();
+        startAnimationLoop();
+      });
+
+      document.getElementById("clearInputBtn").addEventListener("click", () => {
+        const inp = document.getElementById("textInput");
+        inp.value = "";
+        state.text = "OPENTEXT";
+        buildVirtualProject();
+        startAnimationLoop();
+        inp.focus();
+      });
+
+      document.querySelectorAll(".preset-chip").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const val = btn.textContent;
+          document.getElementById("textInput").value = val;
+          state.text = val;
+          buildVirtualProject();
+          startAnimationLoop();
+        });
+      });
+
+      document.getElementById("regenProjectBtn").addEventListener("click", () => {
+        state.projectId = generateRandomProjectId();
+        document.getElementById("headerProjectId").textContent = state.projectId;
+        buildVirtualProject();
+        showToast(`New Project ID: ${state.projectId}`);
+      });
+
+      const fontBtn5x5 = document.getElementById("fontBtn5x5");
+      const fontBtnShadow = document.getElementById("fontBtnShadow");
+      const glyphBlock = document.getElementById("glyphControlsBlock");
+
+      fontBtn5x5.addEventListener("click", () => {
+        state.font = "5x5";
+        fontBtn5x5.dataset.active = "true";
+        fontBtnShadow.dataset.active = "false";
+        glyphBlock.classList.remove("hidden");
+        buildVirtualProject();
+        startAnimationLoop();
+      });
+
+      fontBtnShadow.addEventListener("click", () => {
+        state.font = "shadow";
+        fontBtn5x5.dataset.active = "false";
+        fontBtnShadow.dataset.active = "true";
+        glyphBlock.classList.add("hidden");
+        buildVirtualProject();
+        startAnimationLoop();
+      });
+
+      document.querySelectorAll(".glyph-chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+          state.fillChar = chip.dataset.char;
+          document.getElementById("customGlyphInput").value = state.fillChar;
+          buildVirtualProject();
+          startAnimationLoop();
+        });
+      });
+
+      document.getElementById("customGlyphInput").addEventListener("input", (e) => {
+        const val = e.target.value || "█";
+        state.fillChar = val[0];
+        buildVirtualProject();
+        startAnimationLoop();
+      });
+
+      document.querySelectorAll(".scale-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".scale-btn").forEach(b => b.dataset.active = "false");
+          btn.dataset.active = "true";
+          state.scale = parseInt(btn.dataset.scale) || 1;
+          buildVirtualProject();
+          startAnimationLoop();
+        });
+      });
+
+      document.getElementById("frameBoxToggle").addEventListener("change", (e) => {
+        state.framed = e.target.checked;
+        buildVirtualProject();
+        startAnimationLoop();
+      });
+
+      document.querySelectorAll(".color-mode-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".color-mode-btn").forEach(b => b.dataset.active = "false");
+          btn.dataset.active = "true";
+          state.colorMode = btn.dataset.mode;
+          const solidSel = document.getElementById("solidColorSelector");
+          const gradSel = document.getElementById("gradientColorSelector");
+          if (state.colorMode === "solid") {
+            solidSel.classList.remove("hidden");
+            solidSel.classList.add("flex");
+            gradSel.classList.add("hidden");
+            gradSel.classList.remove("flex");
+          } else {
+            solidSel.classList.add("hidden");
+            solidSel.classList.remove("flex");
+            gradSel.classList.remove("hidden");
+            gradSel.classList.add("flex");
+          }
+          buildVirtualProject();
+          startAnimationLoop();
+        });
+      });
+
+      document.getElementById("animTypeSelect").addEventListener("change", (e) => {
+        state.animType = e.target.value;
+        startAnimationLoop();
+      });
+
+      document.getElementById("playPauseBtn").addEventListener("click", () => {
+        state.isPlaying = !state.isPlaying;
+        const icon = document.getElementById("playPauseIcon");
+        const text = document.getElementById("playPauseText");
+        if (state.isPlaying) {
+          icon.textContent = "pause";
+          text.textContent = "Pause";
+          startAnimationLoop();
+        } else {
+          icon.textContent = "play_arrow";
+          text.textContent = "Play";
+          if (animTimer) clearTimeout(animTimer);
+        }
+      });
+
+      document.getElementById("restartAnimBtn").addEventListener("click", () => {
+        state.isPlaying = true;
+        document.getElementById("playPauseIcon").textContent = "pause";
+        document.getElementById("playPauseText").textContent = "Pause";
+        startAnimationLoop();
+      });
+
+      document.querySelectorAll(".speed-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".speed-btn").forEach(b => {
+            b.className = "speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-white/10 text-slate-300 hover:bg-white/20";
+          });
+          btn.className = "speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-m3-primary text-m3-onPrimary font-bold";
+          state.speed = parseFloat(btn.dataset.speed) || 1.0;
+        });
+      });
+
+      document.getElementById("crtToggleBtn").addEventListener("click", () => {
+        const overlay = document.getElementById("crtOverlay");
+        const out = document.getElementById("terminalOutput");
+        if (overlay.classList.contains("hidden")) {
+          overlay.classList.remove("hidden");
+          out.classList.add("crt-glow");
+        } else {
+          overlay.classList.add("hidden");
+          out.classList.remove("crt-glow");
+        }
+      });
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach(b => b.dataset.active = "false");
+          btn.dataset.active = "true";
+          const tab = btn.dataset.tab;
+          state.activeTab = tab;
+          document.getElementById("tabStudio").classList.toggle("hidden", tab !== "studio");
+          document.getElementById("tabExplorer").classList.toggle("hidden", tab !== "explorer");
+          document.getElementById("tabExport").classList.toggle("hidden", tab !== "export");
+        });
+      });
+
+      document.getElementById("themeToggleBtn").addEventListener("click", () => {
+        const isDark = document.documentElement.classList.toggle("dark");
+        document.getElementById("themeIcon").textContent = isDark ? "light_mode" : "dark_mode";
+      });
+
+      document.getElementById("quickCopyPlain").addEventListener("click", () => {
+        const plain = getCurrentPlainLines().join("\n");
+        copyToClipboard(plain, "Copied unstyled plain text");
+      });
+
+      document.getElementById("quickCopyAnsi").addEventListener("click", () => {
+        const plain = getCurrentPlainLines();
+        const codes = getColorCodes();
+        const ansi = linesToAnsi(plain, state.colorMode, codes);
+        copyToClipboard(ansi, "Copied ANSI terminal escape string");
+      });
+
+      document.getElementById("quickCopyHtml").addEventListener("click", () => {
+        const plain = getCurrentPlainLines();
+        const codes = getColorCodes();
+        const html = linesToHtml(plain, state.colorMode, codes);
+        copyToClipboard(html, "Copied HTML span tags");
+      });
+
+      document.getElementById("quickCopyPyEmbed").addEventListener("click", () => {
+        const snippet = document.getElementById("pythonSnippetBox").textContent;
+        copyToClipboard(snippet, "Copied Python embed script");
+      });
+
+      document.getElementById("copyTerminalTextBtn").addEventListener("click", () => {
+        const plain = getCurrentPlainLines().join("\n");
+        copyToClipboard(plain, "Terminal text copied");
+      });
+
+      document.getElementById("copyActiveFileBtn").addEventListener("click", () => {
+        const content = state.virtualFiles[state.selectedFileKey] || "";
+        copyToClipboard(content, `Copied ${state.selectedFileKey}`);
+      });
+
+      document.getElementById("downloadActiveFileBtn").addEventListener("click", () => {
+        const content = state.virtualFiles[state.selectedFileKey] || "";
+        const fn = state.selectedFileKey.split('/').pop();
+        downloadFile(fn, content, fn.endsWith('.py') ? "text/x-python;charset=utf-8" : "text/plain;charset=utf-8");
+      });
+
+      document.getElementById("copyPythonSnippetBtn").addEventListener("click", () => {
+        copyToClipboard(document.getElementById("pythonSnippetBox").textContent, "Copied Python snippet");
+      });
+
+      document.getElementById("copyHtmlSnippetBtn").addEventListener("click", () => {
+        copyToClipboard(document.getElementById("htmlSnippetBox").textContent, "Copied HTML code");
+      });
+
+      document.getElementById("downloadBashBtn").addEventListener("click", () => {
+        const code = document.getElementById("bashSnippetBox").textContent;
+        downloadFile("banner.sh", code, "application/x-sh;charset=utf-8");
+      });
+
+      document.getElementById("generateZipBtnTop").addEventListener("click", downloadProjectZip);
+      document.getElementById("downloadZipFromExplorer").addEventListener("click", downloadProjectZip);
+      document.getElementById("downloadZipFromTab").addEventListener("click", downloadProjectZip);
+
+      buildVirtualProject();
+      startAnimationLoop();
+    }
+
+    function highlightSelectedSolidColor() {
+      document.querySelectorAll("#solidColorGrid button").forEach(btn => {
+        if (btn.dataset.colorKey === state.solidColor) {
+          btn.classList.add("border-m3-primary", "bg-m3-primaryContainer/20");
+        } else {
+          btn.classList.remove("border-m3-primary", "bg-m3-primaryContainer/20");
+        }
+      });
+    }
+
+    function highlightSelectedGradient() {
+      document.querySelectorAll("#gradientSchemeGrid button").forEach(btn => {
+        if (btn.dataset.gradientKey === state.gradient) {
+          btn.classList.add("border-m3-primary", "bg-m3-primaryContainer/20");
+        } else {
+          btn.classList.remove("border-m3-primary", "bg-m3-primaryContainer/20");
+        }
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", initUI);
+  </script>
+</body>
+</html>
