@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>OpenText Studio v2.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Roboto+Flex:opsz,wght@8..144,400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root {
+      --md-primary: #a88bff;
+      --md-on-primary: #21005d;
+      --md-primary-container: #381e72;
+      --md-on-primary-container: #eaddff;
+      --md-surface: #141218;
+      --md-surface-dim: #100e13;
+      --md-surface-container: #1d192b;
+      --md-surface-container-high: #2b273a;
+      --md-on-surface: #e6e0e9;
+      --md-on-surface-variant: #cac4d0;
+      --md-outline: #938f99;
+      --md-outline-variant: #49454f;
+      --term-bg: #0b0c10;
+      --term-border: #1f2833;
+      --term-glow-color: rgba(168, 139, 255, 0.4);
+      --term-glow-radius: 6px;
+      --term-scanline-opacity: 0.35;
+      --term-font-size: 13px;
+      --term-line-height: 1.15;
+      --term-letter-spacing: 0px;
+      --term-padding: 16px;
+    }
+
+    [data-theme="light"] {
+      --md-primary: #6750a4;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #eaddff;
+      --md-on-primary-container: #21005d;
+      --md-surface: #fef7ff;
+      --md-surface-dim: #f3edf7;
+      --md-surface-container: #f7f2fa;
+      --md-surface-container-high: #ece6f0;
+      --md-on-surface: #1d1b20;
+      --md-on-surface-variant: #49454f;
+      --md-outline: #79747e;
+      --md-outline-variant: #cac4d0;
+      --term-bg: #1e1e24;
+      --term-border: #3b3a42;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Roboto Flex', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--md-surface);
+      color: var(--md-on-surface);
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .svg-icon {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    header {
+      height: 56px;
+      background-color: var(--md-surface-container);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--md-outline-variant);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background-color: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--md-on-surface-variant);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--md-surface-container-high);
+      color: var(--md-on-surface);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    .app-workspace {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .controls-panel {
+      background-color: var(--md-surface-container);
+      border-right: 1px solid var(--md-outline-variant);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background-color: var(--md-surface-dim);
+      border-bottom: 1px solid var(--md-outline-variant);
+      flex-shrink: 0;
+    }
+
+    .nav-tab-btn {
+      flex: 1;
+      padding: 10px 4px;
+      background: transparent;
+      border: none;
+      color: var(--md-on-surface-variant);
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.15s;
+    }
+
+    .nav-tab-btn.active {
+      color: var(--md-primary);
+    }
+
+    .nav-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 15%;
+      width: 70%;
+      height: 3px;
+      background-color: var(--md-primary);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .tab-content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tab-page {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tab-page.active {
+      display: flex;
+    }
+
+    .card {
+      background-color: var(--md-surface-container-high);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--md-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--md-on-surface-variant);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .field-val {
+      font-family: 'Fira Code', monospace;
+      color: var(--md-primary);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .text-input {
+      width: 100%;
+      background: var(--md-surface);
+      border: 1px solid var(--md-outline-variant);
+      color: var(--md-on-surface);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .text-input:focus {
+      border-color: var(--md-primary);
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      background: var(--md-surface);
+      border: 1px solid var(--md-outline-variant);
+      color: var(--md-on-surface);
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .chip.active {
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      border-color: var(--md-primary);
+    }
+
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .range-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--md-surface);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--md-primary);
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+
+    .range-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--md-primary);
+      border: none;
+      cursor: pointer;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 2px 0;
+    }
+
+    .switch-wrap {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch-wrap input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .switch-track {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--md-surface);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: 999px;
+      transition: 0.2s;
+    }
+
+    .switch-track:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--md-outline);
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    input:checked + .switch-track {
+      background-color: var(--md-primary);
+      border-color: var(--md-primary);
+    }
+
+    input:checked + .switch-track:before {
+      transform: translateX(20px);
+      background-color: var(--md-on-primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      min-height: 44px;
+      transition: filter 0.15s, transform 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+    }
+
+    .btn-secondary {
+      background-color: var(--md-surface-container-high);
+      color: var(--md-on-surface);
+      border: 1px solid var(--md-outline-variant);
+    }
+
+    .btn-tonal {
+      background-color: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+    }
+
+    .preview-panel {
+      background-color: var(--md-surface-dim);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-toolbar {
+      background-color: var(--md-surface-container);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--md-outline-variant);
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .playback-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .quick-export-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .term-viewport {
+      flex: 1;
+      padding: 20px;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #171822 0%, #0a0a0f 100%);
+      min-height: 0;
+    }
+
+    .term-scale-wrapper {
+      position: relative;
+      max-width: 100%;
+      transform-origin: center center;
+    }
+
+    .term-screen {
+      background-color: var(--term-bg);
+      border: 1px solid var(--term-border);
+      border-radius: 14px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+      min-width: 260px;
+    }
+
+    .term-header-bar {
+      height: 30px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .term-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .term-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .term-header-title {
+      font-size: 0.72rem;
+      font-family: 'Fira Code', monospace;
+      color: var(--md-outline);
+    }
+
+    .term-display {
+      font-family: 'Fira Code', monospace;
+      font-size: var(--term-font-size);
+      line-height: var(--term-line-height);
+      letter-spacing: var(--term-letter-spacing);
+      padding: var(--term-padding);
+      white-space: pre;
+      overflow-x: auto;
+      user-select: text;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 var(--term-glow-radius) var(--term-glow-color);
+    }
+
+    .crt-scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.75) 50%);
+      background-size: 100% 4px;
+      z-index: 2;
+      opacity: var(--term-scanline-opacity);
+    }
+
+    .c-30 { color: #555555; }
+    .c-31 { color: #ff5555; }
+    .c-32 { color: #50fa7b; }
+    .c-33 { color: #f1fa8c; }
+    .c-34 { color: #bd93f9; }
+    .c-35 { color: #ff79c6; }
+    .c-36 { color: #8be9fd; }
+    .c-37 { color: #f8f8f2; }
+    .c-90 { color: #6272a4; }
+    .c-91 { color: #ff6e6e; }
+    .c-92 { color: #69ff94; }
+    .c-93 { color: #ffffa5; }
+    .c-94 { color: #d6acff; }
+    .c-95 { color: #ff92df; }
+    .c-96 { color: #a4ffff; }
+    .c-97 { color: #ffffff; }
+
+    .color-swatch-picker {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 6px;
+    }
+
+    .color-swatch {
+      width: 100%;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.08);
+    }
+
+    .color-swatch.active {
+      border-color: #ffffff;
+      box-shadow: 0 0 8px rgba(255,255,255,0.4);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--md-surface-container);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: var(--md-surface);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--md-primary);
+      border-radius: 999px;
+      transition: width 0.1s linear;
+    }
+
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--md-on-surface);
+      color: var(--md-surface);
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      z-index: 200;
+      opacity: 0;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    #render-canvas {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .app-workspace {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 56px);
+        height: calc(100dvh - 56px);
+      }
+
+      .preview-panel {
+        order: 1;
+        height: 250px;
+        min-height: 220px;
+        flex-shrink: 0;
+        border-bottom: 2px solid var(--md-outline-variant);
+      }
+
+      .term-viewport {
+        padding: 10px;
+      }
+
+      .controls-panel {
+        order: 2;
+        flex: 1;
+        border-right: none;
+        min-height: 0;
+      }
+
+      .tab-content-area {
+        padding-bottom: 30px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .brand-title {
+        font-size: 1rem;
+      }
+      .preview-panel {
+        height: 220px;
+      }
+      .quick-export-group .btn span {
+        display: none;
+      }
+      .btn {
+        min-height: 40px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <svg class="svg-icon" style="color:var(--md-primary);width:24px;height:24px;" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+      <span class="brand-title">OpenText Studio</span>
+      <span class="brand-badge">v2.0</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="btn-theme-toggle" title="Toggle Theme">
+        <svg class="svg-icon" id="icon-theme" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+      <button class="icon-btn" id="btn-reset-all" title="Reset All Settings">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-workspace">
+    <div class="controls-panel">
+      <nav class="nav-tabs">
+        <button class="nav-tab-btn active" data-tab="tab-text">
+          <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg>
+          <span>Text & Font</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-sliders">
+          <svg class="svg-icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+          <span>Sliders & FX</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-anim">
+          <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+          <span>Animation</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-export">
+          <svg class="svg-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Export</span>
+        </button>
+      </nav>
+
+      <div class="tab-content-area">
+        <div class="tab-page active" id="tab-text">
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              Text Input
+            </div>
+            <div class="field-group">
+              <input type="text" id="input-text" class="text-input" value="OPENTEXT" placeholder="Type text (ENG / RUS)..." autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M4 20h16"></path><path d="M9 4v16"></path><path d="M15 4v16"></path><path d="M4 12h16"></path></svg>
+              Typography Style
+            </div>
+            <div class="chip-group" id="font-style-chips">
+              <div class="chip active" data-font="5x5">5x5 Bitmap (ENG + RUS)</div>
+              <div class="chip" data-font="shadow">ANSI Shadow (6 Rows)</div>
+            </div>
+            <div class="switch-row" id="row-box-frame">
+              <span class="field-label" style="margin:0;">Border Box Panel</span>
+              <label class="switch-wrap">
+                <input type="checkbox" id="check-box-frame">
+                <span class="switch-track"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card" id="card-glyph">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              Fill Glyph (5x5 Font)
+            </div>
+            <div class="chip-group" id="glyph-chips">
+              <div class="chip active" data-glyph="█">█ Solid</div>
+              <div class="chip" data-glyph="#"># Hash</div>
+              <div class="chip" data-glyph="@">@ At</div>
+              <div class="chip" data-glyph="▓">▓ Shade</div>
+              <div class="chip" data-glyph="*">* Star</div>
+              <div class="chip" data-glyph="▲">▲ Triangle</div>
+              <div class="chip" data-glyph="custom">Custom...</div>
+            </div>
+            <input type="text" id="input-custom-glyph" class="text-input" maxlength="2" placeholder="Custom character..." style="display:none;margin-top:6px;">
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"></path></svg>
+              Color Palette
+            </div>
+            <div class="chip-group" id="color-mode-chips" style="margin-bottom:6px;">
+              <div class="chip active" data-mode="solid">Solid Color</div>
+              <div class="chip" data-mode="gradient">Horiz Gradient</div>
+              <div class="chip" data-mode="perrow">Row by Row</div>
+            </div>
+
+            <div id="palette-solid-wrap">
+              <div class="field-label" style="margin-bottom:6px;">16 ANSI Terminal Colors</div>
+              <div class="color-swatch-picker" id="swatch-container"></div>
+            </div>
+
+            <div id="palette-grad-wrap" style="display:none;">
+              <div class="field-label" style="margin-bottom:6px;">Gradient Preset</div>
+              <div class="chip-group" id="gradient-chips">
+                <div class="chip active" data-grad="rainbow">Rainbow</div>
+                <div class="chip" data-grad="fire">Fire</div>
+                <div class="chip" data-grad="ocean">Ocean</div>
+                <div class="chip" data-grad="forest">Forest</div>
+                <div class="chip" data-grad="sunset">Sunset</div>
+                <div class="chip" data-grad="cyberpunk">Cyberpunk</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-page" id="tab-sliders">
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><polyline points="7 9 7 7 9 7"></polyline><polyline points="15 17 17 17 17 15"></polyline></svg>
+              Size & Typography Sliders
+            </div>
+            <div class="slider-container" id="scale-slider-wrap">
+              <div class="field-label">
+                <span>5x5 Glyph Scale Multiplier</span>
+                <span class="field-val" id="val-glyph-scale">1x</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-glyph-scale" min="1" max="5" step="1" value="1">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Terminal Font Size</span>
+                <span class="field-val" id="val-font-size">13px</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-font-size" min="6" max="44" step="1" value="13">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Line Height</span>
+                <span class="field-val" id="val-line-height">1.15</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-line-height" min="0.75" max="2.0" step="0.05" value="1.15">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Letter Spacing</span>
+                <span class="field-val" id="val-letter-spacing">0px</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-letter-spacing" min="-2" max="10" step="1" value="0">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Terminal Padding</span>
+                <span class="field-val" id="val-padding">16px</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-padding" min="6" max="50" step="2" value="16">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="M20 12h2"></path><path d="m19.07 4.93-1.41 1.41"></path><path d="M2 12h2"></path><path d="M12 12l4-4"></path><path d="M12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12z"></path></svg>
+              Animation & Export Sliders
+            </div>
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Speed Multiplier</span>
+                <span class="field-val" id="val-anim-speed">1.0x</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-anim-speed" min="0.1" max="4.0" step="0.1" value="1.0">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Video Record Duration</span>
+                <span class="field-val" id="val-record-sec">4s</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-record-sec" min="2" max="10" step="1" value="4">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+              CRT Monitor & Viewport
+            </div>
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Scanline Intensity</span>
+                <span class="field-val" id="val-scanlines">35%</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-scanlines" min="0" max="100" step="5" value="35">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Glow / Bloom Radius</span>
+                <span class="field-val" id="val-glow">6px</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-glow" min="0" max="30" step="1" value="6">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Viewport Zoom</span>
+                <span class="field-val" id="val-zoom">100%</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-zoom" min="30" max="200" step="5" value="100">
+            </div>
+            <button class="btn btn-secondary" id="btn-autofit-zoom" style="margin-top:4px;">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+              Auto-Fit to Width
+            </button>
+          </div>
+        </div>
+
+        <div class="tab-page" id="tab-anim">
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+              Animation Engine (11 Modes)
+            </div>
+            <div class="chip-group" id="anim-type-chips">
+              <div class="chip active" data-anim="none">None (Static)</div>
+              <div class="chip" data-anim="typewriter">Typewriter</div>
+              <div class="chip" data-anim="pulse">Pulse</div>
+              <div class="chip" data-anim="rainbow_sweep">Rainbow Sweep</div>
+              <div class="chip" data-anim="fade_in">Fade In</div>
+              <div class="chip" data-anim="slide_left">Slide Left</div>
+              <div class="chip" data-anim="blink">Blink</div>
+              <div class="chip" data-anim="row_by_row">Row by Row</div>
+              <div class="chip" data-anim="wave">Wave</div>
+              <div class="chip" data-anim="sparkle">Sparkle</div>
+              <div class="chip" data-anim="gradient_cycle">Gradient Cycle</div>
+              <div class="chip" data-anim="logo_animated">Logo Animated (Box)</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+              Playback Settings
+            </div>
+            <div class="switch-row">
+              <span class="field-label" style="margin:0;">Continuous Infinite Loop</span>
+              <label class="switch-wrap">
+                <input type="checkbox" id="check-anim-loop" checked>
+                <span class="switch-track"></span>
+              </label>
+            </div>
+            <button class="btn btn-primary" id="btn-replay-anim" style="margin-top:6px;">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+              Replay Animation
+            </button>
+          </div>
+        </div>
+
+        <div class="tab-page" id="tab-export">
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+              Video Export (WebM)
+            </div>
+            <button class="btn btn-primary" id="btn-export-video">
+              <svg class="svg-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+              Export Video (.webm)
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              Photo & Snapshot (PNG)
+            </div>
+            <button class="btn btn-tonal" id="btn-export-photo">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              Export Snapshot (.png)
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+              Project Bundle (ZIP)
+            </div>
+            <button class="btn btn-secondary" id="btn-export-zip">
+              <svg class="svg-icon" viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+              Download Studio ZIP
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <svg class="svg-icon" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              Clipboard Copy
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-secondary" id="btn-copy-plain" style="flex:1;">
+                Plain ASCII
+              </button>
+              <button class="btn btn-secondary" id="btn-copy-ansi" style="flex:1;">
+                ANSI Codes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="preview-panel">
+      <div class="preview-toolbar">
+        <div class="playback-controls">
+          <button class="icon-btn" id="btn-play-pause" title="Play/Pause">
+            <svg class="svg-icon" id="svg-play-state" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+          </button>
+          <button class="icon-btn" id="btn-restart" title="Restart">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+          </button>
+          <span style="font-size:0.75rem;font-family:'Fira Code',monospace;color:var(--md-primary);font-weight:600;margin-left:4px;" id="display-mode-label">
+            STATIC
+          </span>
+        </div>
+
+        <div class="quick-export-group">
+          <button class="btn btn-tonal" id="btn-quick-photo" style="min-height:34px;padding:4px 10px;font-size:0.75rem;">
+            <svg class="svg-icon" style="width:16px;height:16px;" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            <span>Photo</span>
+          </button>
+          <button class="btn btn-primary" id="btn-quick-video" style="min-height:34px;padding:4px 10px;font-size:0.75rem;">
+            <svg class="svg-icon" style="width:16px;height:16px;" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+            <span>Video</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="term-viewport" id="term-container-el">
+        <div class="term-scale-wrapper" id="term-wrapper-el">
+          <div class="term-screen" id="term-screen-el">
+            <div class="term-header-bar">
+              <div class="term-dots">
+                <span class="term-dot dot-red"></span>
+                <span class="term-dot dot-yellow"></span>
+                <span class="term-dot dot-green"></span>
+              </div>
+              <span class="term-header-title">opentext — terminal</span>
+              <span style="width:30px;"></span>
+            </div>
+            <div class="term-display" id="term-display"></div>
+            <div class="crt-scanlines"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-video-progress">
+    <div class="modal-box">
+      <div style="display:flex;align-items:center;gap:10px;font-weight:700;">
+        <svg class="svg-icon" style="color:var(--md-primary);" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+        <span>Recording Video WebM...</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="video-progress-fill"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--md-on-surface-variant);">
+        <span id="video-progress-percent">0%</span>
+        <span id="video-progress-time">0.0s / 4.0s</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-msg" id="toast-msg">
+    <svg class="svg-icon" style="width:18px;height:18px;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    <span id="toast-text">Operation completed</span>
+  </div>
+
+  <canvas id="render-canvas"></canvas>
+
+  <script>
+    const FONT_5X5 = {
+      'A':["01110","10001","11111","10001","10001"],'B':["11110","10001","11110","10001","11110"],
+      'C':["01111","10000","10000","10000","01111"],'D':["11110","10001","10001","10001","11110"],
+      'E':["11111","10000","11110","10000","11111"],'F':["11111","10000","11110","10000","10000"],
+      'G':["01111","10000","10111","10001","01111"],'H':["10001","10001","11111","10001","10001"],
+      'I':["11111","00100","00100","00100","11111"],'J':["00111","00010","00010","10010","01100"],
+      'K':["10001","10010","11100","10010","10001"],'L':["10000","10000","10000","10000","11111"],
+      'M':["10001","11011","10101","10001","10001"],'N':["10001","11001","10101","10011","10001"],
+      'O':["01110","10001","10001","10001","01110"],'P':["11110","10001","11110","10000","10000"],
+      'Q':["01110","10001","10101","10010","01101"],'R':["11110","10001","11110","10010","10001"],
+      'S':["01111","10000","01110","00001","11110"],'T':["11111","00100","00100","00100","00100"],
+      'U':["10001","10001","10001","10001","01110"],'V':["10001","10001","10001","01010","00100"],
+      'W':["10001","10001","10101","11011","10001"],'X':["10001","01010","00100","01010","10001"],
+      'Y':["10001","01010","00100","00100","00100"],'Z':["11111","00010","00100","01000","11111"],
+      '0':["01110","10011","10101","11001","01110"],'1':["00100","01100","00100","00100","01110"],
+      '2':["01110","10001","00110","01000","11111"],'3':["11110","00001","01110","00001","11110"],
+      '4':["00010","00110","01010","11111","00010"],'5':["11111","10000","11110","00001","11110"],
+      '6':["01110","10000","11110","10001","01110"],'7':["11111","00001","00010","00100","01000"],
+      '8':["01110","10001","01110","10001","01110"],'9':["01110","10001","01111","00001","01110"],
+      ' ':["00000","00000","00000","00000","00000"],'.':["00000","00000","00000","00000","00100"],
+      ',':["00000","00000","00000","00100","01000"],'!':["00100","00100","00100","00000","00100"],
+      '?':["01110","10001","00110","00000","00100"],'-':["00000","00000","11111","00000","00000"],
+      '_':["00000","00000","00000","00000","11111"],':':["00000","00100","00000","00100","00000"],
+      '+':["00000","00100","11111","00100","00000"],'/':["00001","00010","00100","01000","10000"],
+      'А':["01110","10001","11111","10001","10001"],'Б':["11111","10000","11110","10001","11110"],
+      'В':["11110","10001","11110","10001","11110"],'Г':["11111","10000","10000","10000","10000"],
+      'Д':["00110","01010","01010","11111","10001"],'Е':["11111","10000","11110","10000","11111"],
+      'Ё':["01010","11111","10000","11110","11111"],'Ж':["10101","10101","11111","10101","10101"],
+      'З':["11110","00001","01110","00001","11110"],'И':["10001","10011","10101","11001","10001"],
+      'Й':["01010","10011","10101","11001","10001"],'К':["10001","10010","11100","10010","10001"],
+      'Л':["00110","01010","01010","01010","10001"],'М':["10001","11011","10101","10001","10001"],
+      'Н':["10001","10001","11111","10001","10001"],'О':["01110","10001","10001","10001","01110"],
+      'П':["11111","10001","10001","10001","10001"],'Р':["11110","10001","11110","10000","10000"],
+      'С':["01111","10000","10000","10000","01111"],'Т':["11111","00100","00100","00100","00100"],
+      'У':["10001","10001","01111","00001","11110"],'Ф':["00100","01110","10101","11111","01110"],
+      'Х':["10001","01010","00100","01010","10001"],'Ц':["10001","10001","10001","11111","00001"],
+      'Ч':["10001","10001","01111","00001","00001"],'Ш':["10101","10101","10101","10101","11111"],
+      'Щ':["10101","10101","10101","11111","00001"],'Ъ':["11000","01000","01110","01001","01110"],
+      'Ы':["10001","10001","11101","10011","11101"],'Ь':["10000","10000","11110","10001","11110"],
+      'Э':["01110","10001","00111","10001","01110"],'Ю':["10100","10110","11101","10101","10110"],
+      'Я':["01111","10001","01111","00101","10001"]
+    };
+
+    const SHADOW_FONT = {
+      'A':[" █████╗ ","██╔══██╗","███████║","██╔══██║","██║  ██║","╚═╝  ╚═╝"],
+      'B':["██████╗ ","██╔══██╗","██████╔╝","██╔══██╗","██████╔╝","╚═════╝ "],
+      'C':[" ██████╗","██╔════╝","██║     ","██║     ","╚██████╗"," ╚═════╝"],
+      'D':["██████╗ ","██╔══██╗","██║  ██║","██║  ██║","██████╔╝","╚═════╝ "],
+      'E':["███████╗","██╔════╝","█████╗  ","██╔══╝  ","███████╗","╚══════╝"],
+      'F':["███████╗","██╔════╝","█████╗  ","██╔══╝  ","██║     ","╚═╝     "],
+      'G':[" ██████╗ ","██╔════╝ ","██║  ███╗","██║   ██║","╚██████╔╝"," ╚═════╝ "],
+      'H':["██╗  ██╗","██║  ██║","███████║","██╔══██║","██║  ██║","╚═╝  ╚═╝"],
+      'I':["██╗","██║","██║","██║","██║","╚═╝"],
+      'J':["     ██╗","     ██║","     ██║","██   ██║","╚█████╔╝"," ╚════╝ "],
+      'K':["██╗  ██╗","██║ ██╔╝","█████╔╝ ","██╔═██╗ ","██║  ██╗","╚═╝  ╚═╝"],
+      'L':["██╗     ","██║     ","██║     ","██║     ","███████╗","╚══════╝"],
+      'M':["███╗   ███╗","████╗ ████║","██╔████╔██║","██║╚██╔╝██║","██║ ╚═╝ ██║","╚═╝     ╚═╝"],
+      'N':["███╗   ██╗","████╗  ██║","██╔██╗ ██║","██║╚██╗██║","██║ ╚████║","╚═╝  ╚═══╝"],
+      'O':[" ██████╗ ","██╔═══██╗","██║   ██║","██║   ██║","╚██████╔╝"," ╚═════╝ "],
+      'P':["██████╗ ","██╔══██╗","██████╔╝","██╔═══╝ ","██║     ","╚═╝     "],
+      'Q':[" ██████╗ ","██╔═══██╗","██║   ██║","██║▄▄ ██║","╚██████╔╝"," ╚══▀▀═╝ "],
+      'R':["██████╗ ","██╔══██╗","██████╔╝","██╔══██╗","██║  ██║","╚═╝  ╚═╝"],
+      'S':["███████╗","██╔════╝","███████╗","╚════██║","███████║","╚══════╝"],
+      'T':["████████╗","╚══██╔══╝","   ██║   ","   ██║   ","   ██║   ","   ╚═╝   "],
+      'U':["██╗   ██╗","██║   ██║","██║   ██║","██║   ██║","╚██████╔╝"," ╚═════╝ "],
+      'V':["██╗   ██╗","██║   ██║","██║   ██║","╚██╗ ██╔╝"," ╚████╔╝ ","  ╚═══╝  "],
+      'W':["██╗    ██╗","██║    ██║","██║ █╗ ██║","██║███╗██║","╚███╔███╔╝"," ╚══╝╚══╝ "],
+      'X':["██╗  ██╗","╚██╗██╔╝"," ╚███╔╝ "," ██╔██╗ ","██╔╝ ██╗","╚═╝  ╚═╝"],
+      'Y':["██╗   ██╗","╚██╗ ██╔╝"," ╚████╔╝ ","  ╚██╔╝  ","   ██║   ","   ╚═╝   "],
+      'Z':["███████╗","╚══███╔╝","  ███╔╝ "," ███╔╝  ","███████╗","╚══════╝"],
+      '0':[" ██████╗ ","██╔═████╗","██║██╔██║","████╔╝██║","╚██████╔╝"," ╚═════╝ "],
+      '1':[" ██╗","███║","╚██║"," ██║"," ██║"," ╚═╝"],
+      '2':["██████╗ ","╚════██╗"," █████╔╝","██╔═══╝ ","███████╗","╚══════╝"],
+      '3':["██████╗ ","╚════██╗"," █████╔╝"," ╚═══██╗","██████╔╝","╚═════╝ "],
+      '4':["██╗  ██╗","██║  ██║","███████║","╚════██║","     ██║","     ╚═╝"],
+      '5':["███████╗","██╔════╝","███████╗","╚════██║","███████║","╚══════╝"],
+      '6':[" ██████╗ ","██╔════╝ ","███████╗ ","██╔═══██╗","╚██████╔╝"," ╚═════╝ "],
+      '7':["███████╗","╚════██║","    ██╔╝","   ██╔╝ ","   ██║  ","   ╚═╝  "],
+      '8':[" █████╗ ","██╔══██╗","╚█████╔╝","██╔══██╗","╚█████╔╝"," ╚════╝ "],
+      '9':[" █████╗ ","██╔══██╗","╚██████║"," ╚═══██║"," █████╔╝"," ╚════╝ "],
+      ' ':["        ","        ","        ","        ","        ","        "],
+      '!':["██╗","██║","██║","╚═╝","██╗","╚═╝"],
+      '?':[" ██████╗ ","██╔═══██╗","     ██╔╝","    ██╔╝ ","    ╚═╝  ","    ██╗  "],
+      '.':["   ","   ","   ","   ","██╗","╚═╝"],
+      ',':["   ","   ","   ","   ","██╗","╚═╝"],
+      '-':["       ","       ","██████╗","╚═════╝","       ","       "],
+      ':':["   ","██╗","╚═╝","██╗","╚═╝","   "]
+    };
+
+    const ANSI_COLORS = {
+      30: { name:"black", hex:"#555555" },
+      31: { name:"red", hex:"#ff5555" },
+      32: { name:"green", hex:"#50fa7b" },
+      33: { name:"yellow", hex:"#f1fa8c" },
+      34: { name:"blue", hex:"#bd93f9" },
+      35: { name:"magenta", hex:"#ff79c6" },
+      36: { name:"cyan", hex:"#8be9fd" },
+      37: { name:"white", hex:"#f8f8f2" },
+      90: { name:"bright_black", hex:"#6272a4" },
+      91: { name:"bright_red", hex:"#ff6e6e" },
+      92: { name:"bright_green", hex:"#69ff94" },
+      93: { name:"bright_yellow", hex:"#ffffa5" },
+      94: { name:"bright_blue", hex:"#d6acff" },
+      95: { name:"bright_magenta", hex:"#ff92df" },
+      96: { name:"bright_cyan", hex:"#a4ffff" },
+      97: { name:"bright_white", hex:"#ffffff" }
+    };
+
+    const GRADIENTS = {
+      fire: [91, 93, 33, 31],
+      ocean: [94, 96, 36, 34],
+      forest: [92, 32, 36, 92],
+      rainbow: [91, 93, 92, 96, 94, 95],
+      sunset: [91, 95, 93, 33],
+      cyberpunk: [96, 95, 94, 92]
+    };
+
+    const state = {
+      text: "OPENTEXT",
+      fontStyle: "5x5",
+      fillGlyph: "█",
+      glyphScale: 1,
+      fontSize: 13,
+      lineHeight: 1.15,
+      letterSpacing: 0,
+      padding: 16,
+      colorMode: "solid",
+      solidColor: 92,
+      gradientName: "rainbow",
+      boxFrame: false,
+      animType: "none",
+      animSpeed: 1.0,
+      recordSec: 4,
+      scanlines: 35,
+      glow: 6,
+      zoom: 100,
+      isPlaying: true,
+      loop: true,
+      theme: "dark"
+    };
+
+    let animTimer = null;
+    let animFrame = 0;
+    let isRecordingVideo = false;
+
+    function renderRaw5x5(text, glyph, scale) {
+      scale = Math.max(1, parseInt(scale) || 1);
+      const rows = ["", "", "", "", ""];
+      const upper = (text || "").toUpperCase();
+      for (let ch of upper) {
+        const bm = FONT_5X5[ch] || FONT_5X5['?'];
+        for (let i = 0; i < 5; i++) {
+          rows[i] += bm[i] + " ";
+        }
+      }
+      const out = [];
+      for (let r of rows) {
+        let scaled = "";
+        for (let c of r) {
+          scaled += (c === '1' ? glyph : ' ').repeat(scale);
+        }
+        for (let s = 0; s < scale; s++) {
+          out.push(scaled);
+        }
+      }
+      return out;
+    }
+
+    function renderRawShadow(text) {
+      const rows = ["", "", "", "", "", ""];
+      const upper = (text || "").toUpperCase();
+      for (let ch of upper) {
+        const g = SHADOW_FONT[ch];
+        if (g) {
+          for (let i = 0; i < 6; i++) {
+            rows[i] += g[i];
+          }
+        } else {
+          const bm = FONT_5X5[ch] || FONT_5X5['?'];
+          const up = [];
+          for (let r of bm) {
+            let rowStr = "";
+            for (let c of r) rowStr += (c === '1' ? '██' : '  ');
+            up.push(rowStr);
+            up.push(rowStr);
+          }
+          for (let i = 0; i < 6; i++) {
+            rows[i] += (up[i + 2] || "          ") + " ";
+          }
+        }
+      }
+      return rows;
+    }
+
+    function getBasePlainLines() {
+      if (state.fontStyle === "shadow") {
+        return renderRawShadow(state.text);
+      }
+      return renderRaw5x5(state.text, state.fillGlyph, state.glyphScale);
+    }
+
+    function wrapInBox(lines, colorFn) {
+      const inner = Math.max(...lines.map(l => l.length), 0) + 2;
+      const borderCol = 90;
+      const out = [];
+      out.push([{ text: "┌" + "─".repeat(inner) + "┐", color: borderCol }]);
+      out.push([{ text: "│" + " ".repeat(inner) + "│", color: borderCol }]);
+      lines.forEach((ln, rIdx) => {
+        const pad = Math.max(0, inner - 2 - ln.length);
+        const rowTokens = [
+          { text: "│  ", color: borderCol },
+          ...colorFn(ln, rIdx),
+          { text: " ".repeat(pad) + "│", color: borderCol }
+        ];
+        out.push(rowTokens);
+      });
+      out.push([{ text: "│" + " ".repeat(inner) + "│", color: borderCol }]);
+      out.push([{ text: "└" + "─".repeat(inner) + "┘", color: borderCol }]);
+      return out;
+    }
+
+    function getStaticColoredFrame() {
+      const plain = getBasePlainLines();
+      const codes = state.colorMode === "solid" ? [state.solidColor] : (GRADIENTS[state.gradientName] || GRADIENTS.rainbow);
+
+      const colorRowFn = (line, rIdx) => {
+        if (state.colorMode === "solid") {
+          return [{ text: line, color: state.solidColor }];
+        }
+        if (state.colorMode === "perrow") {
+          const c = codes[rIdx % codes.length];
+          return [{ text: line, color: c }];
+        }
+        const tokens = [];
+        const n = line.length || 1;
+        for (let i = 0; i < line.length; i++) {
+          let idx = Math.floor((i * codes.length) / n);
+          if (idx >= codes.length) idx = codes.length - 1;
+          tokens.push({ text: line[i], color: codes[idx] });
+        }
+        return tokens;
+      };
+
+      if (state.boxFrame) {
+        return wrapInBox(plain, colorRowFn);
+      }
+      return plain.map((ln, rIdx) => colorRowFn(ln, rIdx));
+    }
+
+    function renderTokensToHTML(frameTokens) {
+      return frameTokens.map(row => {
+        return row.map(t => {
+          const colClass = `c-${t.color || 37}`;
+          const safeText = t.text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `<span class="${colClass}">${safeText}</span>`;
+        }).join('');
+      }).join('\n');
+    }
+
+    function drawFrameToCanvas(canvas, frameTokens) {
+      const ctx = canvas.getContext('2d');
+      const fontSize = state.fontSize;
+      const lineHeight = fontSize * state.lineHeight;
+      const padding = state.padding;
+      
+      ctx.font = `${fontSize}px "Fira Code", monospace`;
+      const charWidth = ctx.measureText("M").width;
+
+      let maxCols = 0;
+      frameTokens.forEach(row => {
+        let cols = 0;
+        row.forEach(t => cols += t.text.length);
+        if (cols > maxCols) maxCols = cols;
+      });
+
+      const width = Math.ceil(padding * 2 + maxCols * (charWidth + state.letterSpacing));
+      const height = Math.ceil(padding * 2 + frameTokens.length * lineHeight);
+
+      canvas.width = Math.max(width, 320);
+      canvas.height = Math.max(height, 160);
+
+      ctx.fillStyle = state.theme === "light" ? "#1e1e24" : "#0b0c10";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (state.glow > 0) {
+        ctx.shadowColor = ANSI_COLORS[state.solidColor]?.hex || "#a88bff";
+        ctx.shadowBlur = state.glow;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.textBaseline = "top";
+      ctx.font = `${fontSize}px "Fira Code", monospace`;
+
+      frameTokens.forEach((row, rIdx) => {
+        let x = padding;
+        const y = padding + rIdx * lineHeight;
+        row.forEach(t => {
+          ctx.fillStyle = ANSI_COLORS[t.color]?.hex || "#ffffff";
+          for (let i = 0; i < t.text.length; i++) {
+            ctx.fillText(t.text[i], x, y);
+            x += charWidth + state.letterSpacing;
+          }
+        });
+      });
+
+      if (state.scanlines > 0) {
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = `rgba(0, 0, 0, ${state.scanlines / 100})`;
+        for (let sy = 0; sy < canvas.height; sy += 4) {
+          ctx.fillRect(0, sy, canvas.width, 2);
+        }
+      }
+    }
+
+    function stopAnimation() {
+      if (animTimer) {
+        clearTimeout(animTimer);
+        animTimer = null;
+      }
+    }
+
+    function startAnimationEngine() {
+      stopAnimation();
+      animFrame = 0;
+      if (state.animType === "none") {
+        const frame = getStaticColoredFrame();
+        document.getElementById('term-display').innerHTML = renderTokensToHTML(frame);
+        document.getElementById('display-mode-label').textContent = "STATIC";
+        return;
+      }
+
+      document.getElementById('display-mode-label').textContent = state.animType.toUpperCase();
+      runNextAnimTick();
+    }
+
+    function runNextAnimTick() {
+      if (!state.isPlaying) return;
+
+      const plain = (state.animType === "logo_animated") ? renderRawShadow(state.text) : getBasePlainLines();
+      const codes = (state.colorMode === "solid") ? [state.solidColor] : (GRADIENTS[state.gradientName] || GRADIENTS.rainbow);
+      const speedMult = Math.max(0.1, state.animSpeed);
+
+      let delay = 100;
+      let frameTokens = [];
+
+      switch (state.animType) {
+        case "typewriter": {
+          delay = Math.max(10, 40 / speedMult);
+          const totalChars = plain.reduce((acc, l) => acc + l.length, 0);
+          let cur = 0;
+          frameTokens = plain.map((line, rIdx) => {
+            const rowTokens = [];
+            for (let c = 0; c < line.length; c++) {
+              if (cur <= animFrame) {
+                rowTokens.push({ text: line[c], color: codes[rIdx % codes.length] });
+              } else {
+                rowTokens.push({ text: " ", color: 30 });
+              }
+              cur++;
+            }
+            return rowTokens;
+          });
+          animFrame++;
+          if (animFrame > totalChars + 15) {
+            animFrame = 0;
+            if (!state.loop) return;
+          }
+          break;
+        }
+
+        case "pulse": {
+          delay = Math.max(30, 200 / speedMult);
+          const col = codes[animFrame % codes.length];
+          frameTokens = plain.map(ln => [{ text: ln, color: col }]);
+          animFrame++;
+          break;
+        }
+
+        case "rainbow_sweep": {
+          delay = Math.max(20, 60 / speedMult);
+          frameTokens = plain.map(line => {
+            const row = [];
+            for (let i = 0; i < line.length; i++) {
+              const idx = (i + animFrame) % codes.length;
+              row.push({ text: line[i], color: codes[idx] });
+            }
+            return row;
+          });
+          animFrame++;
+          break;
+        }
+
+        case "fade_in": {
+          delay = Math.max(40, 250 / speedMult);
+          const shades = [90, 37, 97, codes[0]];
+          const sCol = shades[Math.min(animFrame, shades.length - 1)];
+          frameTokens = plain.map(ln => [{ text: ln, color: sCol }]);
+          animFrame++;
+          if (animFrame >= shades.length + 8) {
+            animFrame = 0;
+            if (!state.loop) return;
+          }
+          break;
+        }
+
+        case "slide_left": {
+          delay = Math.max(15, 45 / speedMult);
+          const maxW = Math.max(...plain.map(l => l.length), 0);
+          const offset = Math.max(0, maxW - animFrame * 2);
+          frameTokens = plain.map(ln => [
+            { text: " ".repeat(offset) + ln, color: codes[0] }
+          ]);
+          if (offset <= 0) {
+            animFrame = 0;
+            if (!state.loop) return;
+          } else {
+            animFrame++;
+          }
+          break;
+        }
+
+        case "blink": {
+          delay = Math.max(40, 300 / speedMult);
+          const isOff = animFrame % 2 === 1;
+          const col = isOff ? 30 : codes[0];
+          frameTokens = plain.map(ln => [{ text: ln, color: col }]);
+          animFrame++;
+          break;
+        }
+
+        case "row_by_row": {
+          delay = Math.max(25, 120 / speedMult);
+          frameTokens = plain.map((ln, idx) => {
+            if (idx <= animFrame) {
+              return [{ text: ln, color: codes[idx % codes.length] }];
+            }
+            return [{ text: " ", color: 30 }];
+          });
+          animFrame++;
+          if (animFrame > plain.length + 6) {
+            animFrame = 0;
+            if (!state.loop) return;
+          }
+          break;
+        }
+
+        case "wave": {
+          delay = Math.max(20, 90 / speedMult);
+          frameTokens = plain.map((ln, idx) => {
+            const col = codes[(idx + animFrame) % codes.length];
+            return [{ text: ln, color: col }];
+          });
+          animFrame++;
+          break;
+        }
+
+        case "sparkle": {
+          delay = Math.max(15, 50 / speedMult);
+          frameTokens = plain.map((line, rIdx) => {
+            const row = [];
+            for (let c = 0; c < line.length; c++) {
+              if (line[c] === ' ' || ((rIdx * 13 + c * 7 + animFrame * 5) % 10 < 7)) {
+                row.push({ text: line[c], color: codes[0] });
+              } else {
+                row.push({ text: " ", color: 30 });
+              }
+            }
+            return row;
+          });
+          animFrame++;
+          if (animFrame > 35) {
+            animFrame = 0;
+            if (!state.loop) return;
+          }
+          break;
+        }
+
+        case "gradient_cycle": {
+          delay = Math.max(20, 60 / speedMult);
+          frameTokens = plain.map(line => {
+            const row = [];
+            for (let i = 0; i < line.length; i++) {
+              const idx = (i + animFrame) % codes.length;
+              row.push({ text: line[i], color: codes[idx] });
+            }
+            return row;
+          });
+          animFrame++;
+          break;
+        }
+
+        case "logo_animated": {
+          delay = Math.max(15, 60 / speedMult);
+          const rowColorizer = (line, rIdx) => {
+            const c = codes[rIdx % codes.length];
+            const maxC = Math.min(line.length, animFrame * 3);
+            return [
+              { text: line.substring(0, maxC), color: c },
+              { text: " ".repeat(Math.max(0, line.length - maxC)), color: 30 }
+            ];
+          };
+          frameTokens = wrapInBox(plain, rowColorizer);
+          animFrame++;
+          const maxLineLen = Math.max(...plain.map(l => l.length), 0);
+          if (animFrame * 3 > maxLineLen + 15) {
+            animFrame = 0;
+            if (!state.loop) return;
+          }
+          break;
+        }
+      }
+
+      if (state.boxFrame && state.animType !== "logo_animated") {
+        const inner = Math.max(...plain.map(l => l.length), 0) + 2;
+        const bordered = [];
+        bordered.push([{ text: "┌" + "─".repeat(inner) + "┐", color: 90 }]);
+        bordered.push([{ text: "│" + " ".repeat(inner) + "│", color: 90 }]);
+        frameTokens.forEach(row => {
+          let rowLen = 0;
+          row.forEach(t => rowLen += t.text.length);
+          const pad = Math.max(0, inner - 2 - rowLen);
+          bordered.push([
+            { text: "│  ", color: 90 },
+            ...row,
+            { text: " ".repeat(pad) + "│", color: 90 }
+          ]);
+        });
+        bordered.push([{ text: "│" + " ".repeat(inner) + "│", color: 90 }]);
+        bordered.push([{ text: "└" + "─".repeat(inner) + "┘", color: 90 }]);
+        frameTokens = bordered;
+      }
+
+      document.getElementById('term-display').innerHTML = renderTokensToHTML(frameTokens);
+
+      if (state.isPlaying) {
+        animTimer = setTimeout(runNextAnimTick, delay);
+      }
+    }
+
+    function updatePreview() {
+      applyCSSVariables();
+      startAnimationEngine();
+    }
+
+    function applyCSSVariables() {
+      const root = document.documentElement;
+      root.style.setProperty('--term-font-size', state.fontSize + 'px');
+      root.style.setProperty('--term-line-height', state.lineHeight);
+      root.style.setProperty('--term-letter-spacing', state.letterSpacing + 'px');
+      root.style.setProperty('--term-padding', state.padding + 'px');
+      root.style.setProperty('--term-scanline-opacity', (state.scanlines / 100).toString());
+      root.style.setProperty('--term-glow-radius', state.glow + 'px');
+      
+      const activeHex = ANSI_COLORS[state.solidColor]?.hex || '#a88bff';
+      root.style.setProperty('--term-glow-color', activeHex + '66');
+
+      const wrapper = document.getElementById('term-wrapper-el');
+      wrapper.style.transform = `scale(${state.zoom / 100})`;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast-msg');
+      document.getElementById('toast-text').textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    async function exportPhotoPNG() {
+      const canvas = document.getElementById('render-canvas');
+      const frame = getStaticColoredFrame();
+      drawFrameToCanvas(canvas, frame);
+
+      canvas.toBlob(blob => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `opentext-${Date.now()}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Photo saved as PNG");
+      }, "image/png");
+    }
+
+    async function exportVideoWebM() {
+      if (isRecordingVideo) return;
+      isRecordingVideo = true;
+
+      const modal = document.getElementById('modal-video-progress');
+      const fill = document.getElementById('video-progress-fill');
+      const percentEl = document.getElementById('video-progress-percent');
+      const timeEl = document.getElementById('video-progress-time');
+      modal.classList.add('active');
+
+      const canvas = document.getElementById('render-canvas');
+      const stream = canvas.captureStream(30);
+      let recorder;
+      try {
+        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+      } catch (e) {
+        recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      }
+
+      const chunks = [];
+      recorder.ondataavailable = e => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `opentext-anim-${Date.now()}.webm`;
+        a.click();
+        URL.revokeObjectURL(url);
+        modal.classList.remove('active');
+        isRecordingVideo = false;
+        showToast("Video exported as WebM");
+      };
+
+      recorder.start();
+
+      const durationMs = state.recordSec * 1000;
+      const startTime = performance.now();
+
+      const recTimer = setInterval(() => {
+        const elapsed = performance.now() - startTime;
+        const progress = Math.min(1, elapsed / durationMs);
+        fill.style.width = (progress * 100).toFixed(1) + "%";
+        percentEl.textContent = Math.round(progress * 100) + "%";
+        timeEl.textContent = (elapsed / 1000).toFixed(1) + "s / " + state.recordSec + "s";
+
+        const plain = (state.animType === "logo_animated") ? renderRawShadow(state.text) : getBasePlainLines();
+        const codes = (state.colorMode === "solid") ? [state.solidColor] : (GRADIENTS[state.gradientName] || GRADIENTS.rainbow);
+        
+        let frameTokens = plain.map((l, rIdx) => [{ text: l, color: codes[rIdx % codes.length] }]);
+        if (state.boxFrame) {
+          frameTokens = wrapInBox(plain, (l, rIdx) => [{ text: l, color: codes[rIdx % codes.length] }]);
+        }
+        drawFrameToCanvas(canvas, frameTokens);
+
+        if (elapsed >= durationMs) {
+          clearInterval(recTimer);
+          recorder.stop();
+        }
+      }, 33);
+    }
+
+    async function exportStudioZip() {
+      if (typeof JSZip === "undefined") {
+        showToast("JSZip library not ready");
+        return;
+      }
+      const zip = new JSZip();
+      const folderId = Math.floor(10000 + Math.random() * 90000).toString();
+      const root = zip.folder(folderId);
+      const textDir = root.folder("text");
+      const animDir = root.folder("anim");
+
+      const plain5x5 = renderRaw5x5(state.text, "█", 1);
+      const plainShadow = renderRawShadow(state.text);
+
+      const staticFiles = [
+        ["solid.txt", plain5x5, 92],
+        ["hash.txt", renderRaw5x5(state.text, "#", 1), 96],
+        ["at.txt", renderRaw5x5(state.text, "@", 1), 93],
+        ["shade.txt", renderRaw5x5(state.text, "▓", 1), 91],
+        ["shadow.txt", plainShadow, 94]
+      ];
+
+      staticFiles.forEach(([fn, lines, col]) => {
+        const content = lines.map(ln => `\x1b[${col}m${ln}\x1b[0m`).join('\n');
+        textDir.file(fn, content);
+      });
+
+      const animPyScript = `#!/usr/bin/env python3
+import sys, time
+ART = ${JSON.stringify(plain5x5)}
+COLORS = [${state.solidColor}]
+
+def animate():
+    for line in ART:
+        sys.stdout.write(f"\\033[{COLORS[0]}m{line}\\033[0m\\n")
+        time.sleep(0.05)
+
+if __name__ == "__main__":
+    animate()
+`;
+      animDir.file("run_anim.py", animPyScript);
+      root.file("README.md", `# OpenText Studio Project ${folderId}\nGenerated for: ${state.text}\n`);
+
+      const content = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `opentext-studio-${folderId}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`Studio bundle ${folderId}.zip exported`);
+    }
+
+    function initSwatches() {
+      const cont = document.getElementById('swatch-container');
+      cont.innerHTML = '';
+      Object.keys(ANSI_COLORS).forEach(code => {
+        const c = ANSI_COLORS[code];
+        const el = document.createElement('div');
+        el.className = `color-swatch ${parseInt(code) === state.solidColor ? 'active' : ''}`;
+        el.style.backgroundColor = c.hex;
+        el.title = `${c.name} (${code})`;
+        el.addEventListener('click', () => {
+          document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+          el.classList.add('active');
+          state.solidColor = parseInt(code);
+          updatePreview();
+        });
+        cont.appendChild(el);
+      });
+    }
+
+    function bindUIEvents() {
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          const tabId = btn.getAttribute('data-tab');
+          document.getElementById(tabId).classList.add('active');
+        });
+      });
+
+      const txtInput = document.getElementById('input-text');
+      txtInput.addEventListener('input', e => {
+        state.text = e.target.value.toUpperCase();
+        updatePreview();
+      });
+
+      document.querySelectorAll('#font-style-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#font-style-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          state.fontStyle = ch.getAttribute('data-font');
+          document.getElementById('card-glyph').style.display = state.fontStyle === '5x5' ? 'flex' : 'none';
+          document.getElementById('scale-slider-wrap').style.display = state.fontStyle === '5x5' ? 'flex' : 'none';
+          updatePreview();
+        });
+      });
+
+      document.querySelectorAll('#glyph-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#glyph-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          const g = ch.getAttribute('data-glyph');
+          const custInput = document.getElementById('input-custom-glyph');
+          if (g === 'custom') {
+            custInput.style.display = 'block';
+            state.fillGlyph = custInput.value || '█';
+          } else {
+            custInput.style.display = 'none';
+            state.fillGlyph = g;
+          }
+          updatePreview();
+        });
+      });
+
+      document.getElementById('input-custom-glyph').addEventListener('input', e => {
+        state.fillGlyph = e.target.value || '█';
+        updatePreview();
+      });
+
+      document.getElementById('check-box-frame').addEventListener('change', e => {
+        state.boxFrame = e.target.checked;
+        updatePreview();
+      });
+
+      document.querySelectorAll('#color-mode-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#color-mode-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          state.colorMode = ch.getAttribute('data-mode');
+          document.getElementById('palette-solid-wrap').style.display = state.colorMode === 'solid' ? 'block' : 'none';
+          document.getElementById('palette-grad-wrap').style.display = state.colorMode !== 'solid' ? 'block' : 'none';
+          updatePreview();
+        });
+      });
+
+      document.querySelectorAll('#gradient-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#gradient-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          state.gradientName = ch.getAttribute('data-grad');
+          updatePreview();
+        });
+      });
+
+      const bindSlider = (id, valId, prop, unit, cb) => {
+        const s = document.getElementById(id);
+        const v = document.getElementById(valId);
+        s.addEventListener('input', e => {
+          state[prop] = parseFloat(e.target.value);
+          v.textContent = `${e.target.value}${unit}`;
+          if (cb) cb();
+          else updatePreview();
+        });
+      };
+
+      bindSlider('slider-glyph-scale', 'val-glyph-scale', 'glyphScale', 'x');
+      bindSlider('slider-font-size', 'val-font-size', 'fontSize', 'px');
+      bindSlider('slider-line-height', 'val-line-height', 'lineHeight', '');
+      bindSlider('slider-letter-spacing', 'val-letter-spacing', 'letterSpacing', 'px');
+      bindSlider('slider-padding', 'val-padding', 'padding', 'px');
+      bindSlider('slider-anim-speed', 'val-anim-speed', 'animSpeed', 'x');
+      bindSlider('slider-record-sec', 'val-record-sec', 'recordSec', 's');
+      bindSlider('slider-scanlines', 'val-scanlines', 'scanlines', '%');
+      bindSlider('slider-glow', 'val-glow', 'glow', 'px');
+      bindSlider('slider-zoom', 'val-zoom', 'zoom', '%', () => {
+        applyCSSVariables();
+      });
+
+      document.getElementById('btn-autofit-zoom').addEventListener('click', () => {
+        const container = document.getElementById('term-container-el');
+        const screenEl = document.getElementById('term-screen-el');
+        const availableW = container.clientWidth - 24;
+        const screenW = screenEl.scrollWidth || 500;
+        if (availableW > 0 && screenW > 0) {
+          let calcZoom = Math.min(100, Math.max(30, Math.floor((availableW / screenW) * 100)));
+          state.zoom = calcZoom;
+          document.getElementById('slider-zoom').value = calcZoom;
+          document.getElementById('val-zoom').textContent = calcZoom + '%';
+          applyCSSVariables();
+          showToast(`Zoom fitted to ${calcZoom}%`);
+        }
+      });
+
+      document.querySelectorAll('#anim-type-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#anim-type-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          state.animType = ch.getAttribute('data-anim');
+          state.isPlaying = true;
+          document.getElementById('svg-play-state').innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+          updatePreview();
+        });
+      });
+
+      document.getElementById('check-anim-loop').addEventListener('change', e => {
+        state.loop = e.target.checked;
+      });
+
+      document.getElementById('btn-replay-anim').addEventListener('click', () => {
+        startAnimationEngine();
+      });
+
+      const playPauseBtn = document.getElementById('btn-play-pause');
+      playPauseBtn.addEventListener('click', () => {
+        state.isPlaying = !state.isPlaying;
+        document.getElementById('svg-play-state').innerHTML = state.isPlaying 
+          ? '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>' 
+          : '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+        if (state.isPlaying) {
+          runNextAnimTick();
+        } else {
+          stopAnimation();
+        }
+      });
+
+      document.getElementById('btn-restart').addEventListener('click', () => {
+        state.isPlaying = true;
+        document.getElementById('svg-play-state').innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+        startAnimationEngine();
+      });
+
+      document.getElementById('btn-export-photo').addEventListener('click', exportPhotoPNG);
+      document.getElementById('btn-quick-photo').addEventListener('click', exportPhotoPNG);
+      document.getElementById('btn-export-video').addEventListener('click', exportVideoWebM);
+      document.getElementById('btn-quick-video').addEventListener('click', exportVideoWebM);
+      document.getElementById('btn-export-zip').addEventListener('click', exportStudioZip);
+
+      document.getElementById('btn-copy-plain').addEventListener('click', () => {
+        const plain = getBasePlainLines().join('\n');
+        navigator.clipboard.writeText(plain).then(() => showToast("Plain text copied"));
+      });
+
+      document.getElementById('btn-copy-ansi').addEventListener('click', () => {
+        const plain = getBasePlainLines();
+        const ansi = plain.map(ln => `\x1b[${state.solidColor}m${ln}\x1b[0m`).join('\n');
+        navigator.clipboard.writeText(ansi).then(() => showToast("ANSI codes copied"));
+      });
+
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        state.theme = state.theme === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', state.theme);
+        const icon = document.getElementById('icon-theme');
+        icon.innerHTML = state.theme === 'dark' 
+          ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>' 
+          : '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>';
+        updatePreview();
+      });
+
+      document.getElementById('btn-reset-all').addEventListener('click', () => {
+        state.text = "OPENTEXT";
+        state.fontStyle = "5x5";
+        state.fillGlyph = "█";
+        state.glyphScale = 1;
+        state.fontSize = 13;
+        state.lineHeight = 1.15;
+        state.letterSpacing = 0;
+        state.padding = 16;
+        state.colorMode = "solid";
+        state.solidColor = 92;
+        state.gradientName = "rainbow";
+        state.boxFrame = false;
+        state.animType = "none";
+        state.animSpeed = 1.0;
+        state.scanlines = 35;
+        state.glow = 6;
+        state.zoom = 100;
+
+        txtInput.value = "OPENTEXT";
+        document.getElementById('slider-glyph-scale').value = 1;
+        document.getElementById('slider-font-size').value = 13;
+        document.getElementById('slider-line-height').value = 1.15;
+        document.getElementById('slider-letter-spacing').value = 0;
+        document.getElementById('slider-padding').value = 16;
+        document.getElementById('slider-anim-speed').value = 1.0;
+        document.getElementById('slider-scanlines').value = 35;
+        document.getElementById('slider-glow').value = 6;
+        document.getElementById('slider-zoom').value = 100;
+
+        document.getElementById('val-glyph-scale').textContent = '1x';
+        document.getElementById('val-font-size').textContent = '13px';
+        document.getElementById('val-line-height').textContent = '1.15';
+        document.getElementById('val-letter-spacing').textContent = '0px';
+        document.getElementById('val-padding').textContent = '16px';
+        document.getElementById('val-anim-speed').textContent = '1.0x';
+        document.getElementById('val-scanlines').textContent = '35%';
+        document.getElementById('val-glow').textContent = '6px';
+        document.getElementById('val-zoom').textContent = '100%';
+
+        document.getElementById('check-box-frame').checked = false;
+        initSwatches();
+        updatePreview();
+        showToast("Settings reset to defaults");
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initSwatches();
+      bindUIEvents();
+      updatePreview();
+    });
+  </script>
+</body>
+</html>
