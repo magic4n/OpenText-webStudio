@@ -1,647 +1,1245 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-site-verification" content="6JbkxKHl_PFecUHeNP5jkVEdye1i_pHwvV4Wsncs0tU" />
-  <title>OpenText Studio — ASCII & ANSI Art Generator</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>OpenText Studio v2.0</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['"Fira Code"', 'Consolas', 'monospace']
-          },
-          colors: {
-            m3: {
-              surface: 'var(--md-surface)',
-              surfaceDim: 'var(--md-surface-dim)',
-              surfaceContainer: 'var(--md-surface-container)',
-              surfaceContainerHigh: 'var(--md-surface-container-high)',
-              surfaceContainerHighest: 'var(--md-surface-container-highest)',
-              onSurface: 'var(--md-on-surface)',
-              onSurfaceVariant: 'var(--md-on-surface-variant)',
-              outline: 'var(--md-outline)',
-              outlineVariant: 'var(--md-outline-variant)',
-              primary: 'var(--md-primary)',
-              onPrimary: 'var(--md-on-primary)',
-              primaryContainer: 'var(--md-primary-container)',
-              onPrimaryContainer: 'var(--md-on-primary-container)',
-              secondary: 'var(--md-secondary)',
-              secondaryContainer: 'var(--md-secondary-container)',
-              onSecondaryContainer: 'var(--md-on-secondary-container)',
-              tertiary: 'var(--md-tertiary)',
-              tertiaryContainer: 'var(--md-tertiary-container)',
-              error: 'var(--md-error)'
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Roboto+Flex:opsz,wght@8..144,300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     :root {
-      --md-surface: #fdf8fd;
-      --md-surface-dim: #ded8e0;
-      --md-surface-container: #f7f2fa;
-      --md-surface-container-high: #f1ecf4;
-      --md-surface-container-highest: #ebe6ee;
-      --md-on-surface: #1d1b20;
-      --md-on-surface-variant: #49454e;
-      --md-outline: #7a757f;
-      --md-outline-variant: #cac4cf;
+      --md-primary: #a88bff;
+      --md-on-primary: #21005d;
+      --md-primary-container: #381e72;
+      --md-on-primary-container: #eaddff;
+      --md-surface: #141218;
+      --md-surface-dim: #110f14;
+      --md-surface-container: #1d192b;
+      --md-surface-container-high: #2b273a;
+      --md-on-surface: #e6e0e9;
+      --md-on-surface-variant: #cac4d0;
+      --md-outline: #938f99;
+      --md-outline-variant: #49454f;
+      --md-tertiary: #efb8c8;
+      --md-on-tertiary: #492532;
+      --term-bg: #0b0c10;
+      --term-text: #c5c6c7;
+      --term-border: #1f2833;
+      --term-glow-color: rgba(168, 139, 255, 0.4);
+      --term-glow-radius: 6px;
+      --term-scanline-opacity: 0.35;
+      --term-font-size: 13px;
+      --term-line-height: 1.15;
+      --term-letter-spacing: 0px;
+      --term-padding: 20px;
+      --term-zoom: 1;
+    }
+
+    [data-theme="light"] {
       --md-primary: #6750a4;
       --md-on-primary: #ffffff;
       --md-primary-container: #eaddff;
       --md-on-primary-container: #21005d;
-      --md-secondary: #625b71;
-      --md-secondary-container: #e8def8;
-      --md-on-secondary-container: #1d192b;
+      --md-surface: #fef7ff;
+      --md-surface-dim: #f3edf7;
+      --md-surface-container: #f7f2fa;
+      --md-surface-container-high: #ece6f0;
+      --md-on-surface: #1d1b20;
+      --md-on-surface-variant: #49454f;
+      --md-outline: #79747e;
+      --md-outline-variant: #cac4d0;
       --md-tertiary: #7d5260;
-      --md-tertiary-container: #ffd8e4;
-      --md-error: #ba1a1a;
-      --term-bg: #0f1117;
-      --term-fg: #e2e8f0;
+      --md-on-tertiary: #ffffff;
+      --term-bg: #1e1e24;
+      --term-text: #f0f0f0;
+      --term-border: #3b3a42;
     }
-    .dark {
-      --md-surface: #141218;
-      --md-surface-dim: #141218;
-      --md-surface-container: #211f26;
-      --md-surface-container-high: #2b2930;
-      --md-surface-container-highest: #36343b;
-      --md-on-surface: #e6e0e9;
-      --md-on-surface-variant: #cac4d0;
-      --md-outline: #948f99;
-      --md-outline-variant: #49454e;
-      --md-primary: #d0bcff;
-      --md-on-primary: #381e72;
-      --md-primary-container: #4f378b;
-      --md-on-primary-container: #eaddff;
-      --md-secondary: #ccc2dc;
-      --md-secondary-container: #4a4458;
-      --md-on-secondary-container: #e8def8;
-      --md-tertiary: #efb8c8;
-      --md-tertiary-container: #633b48;
-      --md-error: #ffb4ab;
-      --term-bg: #090b10;
-      --term-fg: #f1f5f9;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
+
     body {
+      font-family: 'Roboto Flex', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--md-surface);
       color: var(--md-on-surface);
-      font-family: 'Inter', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
     }
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-      vertical-align: middle;
-      line-height: 1;
+
+    header {
+      background-color: var(--md-surface-container);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--md-outline-variant);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
-    .custom-scroll::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: transparent;
+
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background-color: var(--md-outline-variant);
-      border-radius: 9999px;
-    }
-    .crt-glow {
-      text-shadow: 0 0 4px rgba(74, 222, 128, 0.4), 0 0 10px rgba(56, 189, 248, 0.25);
-    }
-    .crt-scanlines {
-      background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%, 
-        rgba(0, 0, 0, 0.25) 50%
-      ), linear-gradient(
-        90deg,
-        rgba(255, 0, 0, 0.03),
-        rgba(0, 255, 0, 0.01),
-        rgba(0, 0, 255, 0.03)
-      );
-      background-size: 100% 3px, 6px 100%;
-    }
-    .seg-btn[data-active="true"] {
-      background-color: var(--md-secondary-container);
-      color: var(--md-on-secondary-container);
+
+    .brand .badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background-color: var(--md-primary-container);
+      color: var(--md-on-primary-container);
       font-weight: 600;
     }
-    .tab-btn[data-active="true"] {
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--md-on-surface-variant);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--md-surface-container-high);
+      color: var(--md-on-surface);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.94);
+    }
+
+    .material-symbols-outlined {
+      font-size: 22px;
+      user-select: none;
+    }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      flex: 1;
+      height: calc(100vh - 67px);
+      overflow: hidden;
+    }
+
+    .controls-panel {
+      background-color: var(--md-surface-container);
+      border-right: 1px solid var(--md-outline-variant);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .nav-tabs {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      background-color: var(--md-surface-dim);
+      border-bottom: 1px solid var(--md-outline-variant);
+      flex-shrink: 0;
+    }
+
+    .nav-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-tab-btn {
+      flex: 1;
+      min-width: 90px;
+      padding: 12px 6px;
+      background: transparent;
+      border: none;
+      color: var(--md-on-surface-variant);
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      position: relative;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    .nav-tab-btn .material-symbols-outlined {
+      font-size: 20px;
+    }
+
+    .nav-tab-btn.active {
       color: var(--md-primary);
-      border-bottom-color: var(--md-primary);
+    }
+
+    .nav-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 12%;
+      width: 76%;
+      height: 3px;
+      background-color: var(--md-primary);
+      border-radius: 3px 3px 0 0;
+    }
+
+    .tab-content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .tab-page {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-page.active {
+      display: flex;
+    }
+
+    .card {
+      background-color: var(--md-surface-container-high);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--md-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--md-on-surface-variant);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .field-val {
+      font-family: 'Fira Code', monospace;
+      color: var(--md-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .text-input {
+      width: 100%;
+      background: var(--md-surface);
+      border: 1px solid var(--md-outline-variant);
+      color: var(--md-on-surface);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .text-input:focus {
+      border-color: var(--md-primary);
+      box-shadow: 0 0 0 2px var(--md-primary-container);
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      background: var(--md-surface);
+      border: 1px solid var(--md-outline-variant);
+      color: var(--md-on-surface);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .chip:hover {
+      border-color: var(--md-outline);
+    }
+
+    .chip.active {
+      background: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+      border-color: var(--md-primary);
+    }
+
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .range-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--md-surface);
+      outline: none;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--md-primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform 0.1s;
+    }
+
+    .range-slider::-webkit-slider-thumb:active {
+      transform: scale(1.25);
+    }
+
+    .range-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--md-primary);
+      border: none;
+      cursor: pointer;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .switch-wrap {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+
+    .switch-wrap input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .switch-track {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--md-surface);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: 999px;
+      transition: 0.2s;
+    }
+
+    .switch-track:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--md-outline);
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    input:checked + .switch-track {
+      background-color: var(--md-primary);
+      border-color: var(--md-primary);
+    }
+
+    input:checked + .switch-track:before {
+      transform: translateX(22px);
+      background-color: var(--md-on-primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      min-height: 48px;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background-color: var(--md-primary);
+      color: var(--md-on-primary);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 4px 12px rgba(168, 139, 255, 0.35);
+    }
+
+    .btn-secondary {
+      background-color: var(--md-surface-container-high);
+      color: var(--md-on-surface);
+      border: 1px solid var(--md-outline-variant);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--md-outline-variant);
+    }
+
+    .btn-tonal {
+      background-color: var(--md-primary-container);
+      color: var(--md-on-primary-container);
+    }
+
+    .btn-tonal:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .preview-panel {
+      background-color: var(--md-surface-dim);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-toolbar {
+      background-color: var(--md-surface-container);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--md-outline-variant);
+      flex-shrink: 0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .playback-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quick-export-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .term-container {
+      flex: 1;
+      padding: 24px;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #171822 0%, #0a0a0f 100%);
+    }
+
+    .term-wrapper {
+      position: relative;
+      max-width: 100%;
+      transition: transform 0.15s ease-out;
+      transform-origin: center center;
+    }
+
+    .term-screen {
+      background-color: var(--term-bg);
+      border: 1px solid var(--term-border);
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+      min-width: 280px;
+    }
+
+    .term-header-bar {
+      height: 34px;
+      background: rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      justify-content: space-between;
+      user-select: none;
+    }
+
+    .term-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .term-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .term-header-title {
+      font-size: 0.75rem;
+      font-family: 'Fira Code', monospace;
+      color: var(--md-outline);
+    }
+
+    .term-display {
+      font-family: 'Fira Code', monospace;
+      font-size: var(--term-font-size);
+      line-height: var(--term-line-height);
+      letter-spacing: var(--term-letter-spacing);
+      padding: var(--term-padding);
+      white-space: pre;
+      overflow-x: auto;
+      user-select: text;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 var(--term-glow-radius) var(--term-glow-color);
+    }
+
+    .crt-scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.75) 50%);
+      background-size: 100% 4px;
+      z-index: 2;
+      opacity: var(--term-scanline-opacity);
+    }
+
+    .c-30 { color: #555555; }
+    .c-31 { color: #ff5555; }
+    .c-32 { color: #50fa7b; }
+    .c-33 { color: #f1fa8c; }
+    .c-34 { color: #bd93f9; }
+    .c-35 { color: #ff79c6; }
+    .c-36 { color: #8be9fd; }
+    .c-37 { color: #f8f8f2; }
+    .c-90 { color: #6272a4; }
+    .c-91 { color: #ff6e6e; }
+    .c-92 { color: #69ff94; }
+    .c-93 { color: #ffffa5; }
+    .c-94 { color: #d6acff; }
+    .c-95 { color: #ff92df; }
+    .c-96 { color: #a4ffff; }
+    .c-97 { color: #ffffff; }
+
+    .color-swatch-picker {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 6px;
+    }
+
+    .color-swatch {
+      width: 100%;
+      height: 32px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.1);
+    }
+
+    .color-swatch.active {
+      border-color: #ffffff;
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--md-surface-container);
+      border: 1px solid var(--md-outline-variant);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 20px 48px rgba(0,0,0,0.6);
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 10px;
+      background: var(--md-surface);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--md-primary);
+      border-radius: 999px;
+      transition: width 0.1s linear;
+    }
+
+    .modal-meta {
+      font-size: 0.85rem;
+      color: var(--md-on-surface-variant);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .files-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .file-item {
+      background: var(--md-surface);
+      border: 1px solid var(--md-outline-variant);
+      padding: 10px 14px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--md-on-surface);
+      color: var(--md-surface);
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      z-index: 200;
+      opacity: 0;
+      transition: transform 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    #render-canvas {
+      display: none;
+    }
+
+    @media (max-width: 960px) {
+      .app-layout {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+      }
+
+      .preview-panel {
+        position: sticky;
+        top: 67px;
+        z-index: 40;
+        height: 340px;
+        min-height: 300px;
+        border-bottom: 2px solid var(--md-outline-variant);
+      }
+
+      .term-container {
+        padding: 12px;
+      }
+
+      .controls-panel {
+        height: auto;
+        border-right: none;
+        overflow: visible;
+      }
+
+      .nav-tabs {
+        position: sticky;
+        top: 407px;
+        z-index: 35;
+      }
+
+      .tab-content-area {
+        overflow-y: visible;
+        padding-bottom: 40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 10px 12px;
+      }
+      .brand h1 {
+        font-size: 1.1rem;
+      }
+      .preview-panel {
+        height: 290px;
+      }
+      .preview-toolbar {
+        padding: 6px 10px;
+      }
+      .quick-export-group .btn span:not(.material-symbols-outlined) {
+        display: none;
+      }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-m3-primary selection:text-m3-onPrimary">
-
-  <header class="sticky top-0 z-40 bg-m3-surfaceContainer/90 backdrop-blur border-b border-m3-outlineVariant/40 px-4 lg:px-8 py-3 transition-colors">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-m3-primaryContainer flex items-center justify-center text-m3-onPrimaryContainer shadow-sm">
-          <span class="material-symbols-outlined text-2xl">terminal</span>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-lg font-bold tracking-tight">OpenText Studio</h1>
-            <span class="text-[10px] font-mono tracking-widest px-2 py-0.5 rounded-full bg-m3-surfaceContainerHighest text-m3-outline font-semibold">M3 WEB</span>
-          </div>
-          <p class="text-xs text-m3-onSurfaceVariant">ASCII & ANSI Art & Animation Engine</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-mono">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Project:</span>
-          <span id="headerProjectId" class="font-bold text-m3-primary">00000</span>
-        </div>
-
-        <button id="themeToggleBtn" type="button" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-m3-surfaceContainerHigh active:scale-95 transition-all text-m3-onSurfaceVariant">
-          <span class="material-symbols-outlined" id="themeIcon">light_mode</span>
-        </button>
-
-        <button id="generateZipBtnTop" type="button" class="flex items-center gap-2 px-4 py-2 rounded-full bg-m3-primary text-m3-onPrimary hover:opacity-90 active:scale-95 shadow-sm text-sm font-medium transition-all">
-          <span class="material-symbols-outlined text-lg">folder_zip</span>
-          <span class="hidden md:inline">Download Studio ZIP</span>
-        </button>
-      </div>
+<body>
+  <header>
+    <div class="brand">
+      <span class="material-symbols-outlined" style="color:var(--md-primary);font-size:28px;">terminal</span>
+      <h1>OpenText Studio</h1>
+      <span class="badge">v2.0</span>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="btn-theme-toggle" title="Toggle Theme">
+        <span class="material-symbols-outlined">dark_mode</span>
+      </button>
+      <button class="icon-btn" id="btn-reset-all" title="Reset All Settings">
+        <span class="material-symbols-outlined">restart_alt</span>
+      </button>
     </div>
   </header>
 
-  <nav class="bg-m3-surface border-b border-m3-outlineVariant/30 px-4 lg:px-8">
-    <div class="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto custom-scroll">
-      <button class="tab-btn flex items-center gap-2 px-5 py-3 border-b-2 border-transparent text-sm font-medium text-m3-onSurfaceVariant transition-all whitespace-nowrap" data-tab="studio" data-active="true">
-        <span class="material-symbols-outlined text-lg">design_services</span>
-        <span>Studio Canvas</span>
-      </button>
-      <button class="tab-btn flex items-center gap-2 px-5 py-3 border-b-2 border-transparent text-sm font-medium text-m3-onSurfaceVariant transition-all whitespace-nowrap" data-tab="explorer" data-active="false">
-        <span class="material-symbols-outlined text-lg">account_tree</span>
-        <span>Project Files (Tree)</span>
-      </button>
-      <button class="tab-btn flex items-center gap-2 px-5 py-3 border-b-2 border-transparent text-sm font-medium text-m3-onSurfaceVariant transition-all whitespace-nowrap" data-tab="export" data-active="false">
-        <span class="material-symbols-outlined text-lg">code</span>
-        <span>Export & Embed</span>
-      </button>
-    </div>
-  </nav>
-
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 flex flex-col gap-6">
-
-    <section class="p-4 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 shadow-sm flex flex-col md:flex-row items-center gap-4">
-      <div class="w-full flex-1 relative">
-        <label for="textInput" class="text-[11px] font-semibold tracking-wider text-m3-outline uppercase px-2 mb-1 block">Input Text (ENG + RUS)</label>
-        <div class="relative flex items-center">
-          <input id="textInput" type="text" value="OPENTEXT" maxlength="32" class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant rounded-2xl px-4 py-3 text-base font-mono tracking-wide focus:outline-none focus:border-m3-primary transition-all pr-10 text-m3-onSurface" placeholder="Type text here...">
-          <button id="clearInputBtn" type="button" class="absolute right-3 text-m3-outline hover:text-m3-onSurface">
-            <span class="material-symbols-outlined text-xl">close</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="w-full md:w-auto flex flex-col justify-end">
-        <span class="text-[11px] font-semibold tracking-wider text-m3-outline uppercase px-2 mb-1 block">Quick Presets</span>
-        <div class="flex items-center gap-1.5 flex-wrap">
-          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">OPENTEXT</button>
-          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">ПРИВЕТ</button>
-          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">CYBER</button>
-          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">MATRIX</button>
-          <button type="button" class="preset-chip px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 text-xs font-mono hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all">2026</button>
-          <button id="regenProjectBtn" type="button" title="Regenerate Project ID" class="p-2 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 hover:bg-m3-secondaryContainer hover:text-m3-onSecondaryContainer transition-all text-xs flex items-center justify-center">
-            <span class="material-symbols-outlined text-sm">refresh</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <div id="tabStudio" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <div class="lg:col-span-5 xl:col-span-4 flex flex-col gap-5">
-        
-        <div class="p-5 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-2 border-b border-m3-outlineVariant/30">
-            <span class="text-xs font-bold tracking-wider uppercase text-m3-outline flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-sm">font_download</span> Typography & Shape
-            </span>
-          </div>
-
-          <div>
-            <label class="text-xs font-medium text-m3-onSurfaceVariant mb-2 block">Font Family</label>
-            <div class="grid grid-cols-2 p-1 rounded-2xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40">
-              <button id="fontBtn5x5" type="button" class="seg-btn py-2 px-3 rounded-xl text-xs text-center transition-all" data-font="5x5" data-active="true">5x5 Bitmap</button>
-              <button id="fontBtnShadow" type="button" class="seg-btn py-2 px-3 rounded-xl text-xs text-center transition-all" data-font="shadow" data-active="false">ANSI Shadow</button>
-            </div>
-          </div>
-
-          <div id="glyphControlsBlock" class="flex flex-col gap-3">
-            <div>
-              <label class="text-xs font-medium text-m3-onSurfaceVariant mb-1.5 block">Fill Glyph Character</label>
-              <div class="flex items-center gap-1.5 flex-wrap">
-                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="█">█</button>
-                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="#">#</button>
-                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="@">@</button>
-                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="▓">▓</button>
-                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="*">*</button>
-                <button type="button" class="glyph-chip w-9 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 font-mono text-sm hover:border-m3-primary flex items-center justify-center transition-all" data-char="▲">▲</button>
-                <input id="customGlyphInput" type="text" maxlength="2" value="█" class="w-12 h-9 rounded-xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-center font-mono text-sm focus:outline-none focus:border-m3-primary">
-              </div>
-            </div>
-
-            <div>
-              <label class="text-xs font-medium text-m3-onSurfaceVariant mb-1.5 block">Scale Factor</label>
-              <div class="grid grid-cols-3 p-1 rounded-2xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40">
-                <button type="button" class="scale-btn seg-btn py-1.5 text-xs rounded-xl" data-scale="1" data-active="true">1x</button>
-                <button type="button" class="scale-btn seg-btn py-1.5 text-xs rounded-xl" data-scale="2" data-active="false">2x</button>
-                <button type="button" class="scale-btn seg-btn py-1.5 text-xs rounded-xl" data-scale="3" data-active="false">3x</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-2 border-t border-m3-outlineVariant/30 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-base text-m3-outline">crop_free</span>
-              <span class="text-xs font-medium">Border Framing (Box)</span>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input id="frameBoxToggle" type="checkbox" class="sr-only peer">
-              <div class="w-11 h-6 bg-m3-surfaceContainerHighest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-m3-primary"></div>
-            </label>
-          </div>
-        </div>
-
-        <div class="p-5 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-2 border-b border-m3-outlineVariant/30">
-            <span class="text-xs font-bold tracking-wider uppercase text-m3-outline flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-sm">palette</span> Color & Shading
-            </span>
-          </div>
-
-          <div>
-            <label class="text-xs font-medium text-m3-onSurfaceVariant mb-2 block">Color Palette Mode</label>
-            <div class="grid grid-cols-3 p-1 rounded-2xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40">
-              <button type="button" class="color-mode-btn seg-btn py-1.5 text-xs rounded-xl" data-mode="solid" data-active="false">Solid 16</button>
-              <button type="button" class="color-mode-btn seg-btn py-1.5 text-xs rounded-xl" data-mode="gradient" data-active="true">Gradient</button>
-              <button type="button" class="color-mode-btn seg-btn py-1.5 text-xs rounded-xl" data-mode="perrow" data-active="false">Per-Row</button>
-            </div>
-          </div>
-
-          <div id="solidColorSelector" class="hidden flex-col gap-2">
-            <label class="text-xs font-medium text-m3-onSurfaceVariant block">Select ANSI 16 Color</label>
-            <div class="grid grid-cols-4 gap-2" id="solidColorGrid"></div>
-          </div>
-
-          <div id="gradientColorSelector" class="flex flex-col gap-2">
-            <label class="text-xs font-medium text-m3-onSurfaceVariant block">Select Gradient Scheme</label>
-            <div class="grid grid-cols-2 gap-2" id="gradientSchemeGrid"></div>
-          </div>
-        </div>
-
-        <div class="p-5 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 shadow-sm flex flex-col gap-4">
-          <div class="flex items-center justify-between pb-2 border-b border-m3-outlineVariant/30">
-            <span class="text-xs font-bold tracking-wider uppercase text-m3-outline flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-sm">movie</span> Animation Mode
-            </span>
-          </div>
-
-          <div>
-            <label for="animTypeSelect" class="text-xs font-medium text-m3-onSurfaceVariant mb-1.5 block">Select Preset Motion</label>
-            <select id="animTypeSelect" class="w-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 rounded-2xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:border-m3-primary">
-              <option value="none">Static Rendering (None)</option>
-              <option value="typewriter">Typewriter (Char-by-Char)</option>
-              <option value="pulse">Pulse (Palette Cycle)</option>
-              <option value="rainbow_sweep" selected>Rainbow Sweep (Continuous)</option>
-              <option value="fade_in">Fade In (Dim to Bright)</option>
-              <option value="slide_left">Slide Left (Shift Pad)</option>
-              <option value="blink">Blink (Terminal Flashing)</option>
-              <option value="row_by_row">Row By Row (Vertical Sweep)</option>
-              <option value="wave">Wave (Color Sine Shift)</option>
-              <option value="sparkle">Sparkle (Random Reveal)</option>
-              <option value="gradient_cycle">Gradient Cycle (Horizontal Wave)</option>
-              <option value="logo_animated">Logo Box Animated (Framed Reveal)</option>
-            </select>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="lg:col-span-7 xl:col-span-8 flex flex-col gap-4">
-        
-        <div class="rounded-3xl border border-m3-outlineVariant/50 overflow-hidden shadow-2xl flex flex-col" style="background-color: var(--term-bg);">
-          
-          <div class="px-5 py-3.5 bg-black/40 border-b border-white/10 flex items-center justify-between flex-wrap gap-3">
-            <div class="flex items-center gap-2">
-              <div class="flex items-center gap-1.5">
-                <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
-                <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
-                <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
-              </div>
-              <span class="text-xs font-mono text-slate-400 pl-2">studio@opentext: ~/project/text</span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <button id="crtToggleBtn" type="button" class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono text-slate-300 hover:bg-white/10 transition-all flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">tv</span> CRT Glow
-              </button>
-
-              <button id="copyTerminalTextBtn" type="button" class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] font-mono text-slate-300 hover:bg-white/10 transition-all flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">content_copy</span> Copy
-              </button>
-            </div>
-          </div>
-
-          <div id="terminalScreenContainer" class="relative min-h-[380px] p-6 font-mono text-sm leading-tight overflow-x-auto custom-scroll flex items-center justify-center">
-            <div id="crtOverlay" class="pointer-events-none absolute inset-0 crt-scanlines opacity-40"></div>
-            <pre id="terminalOutput" class="relative z-10 font-mono whitespace-pre select-text transition-all crt-glow text-left"></pre>
-          </div>
-
-          <div class="px-5 py-3.5 bg-black/40 border-t border-white/10 flex items-center justify-between flex-wrap gap-3">
-            <div class="flex items-center gap-2">
-              <button id="playPauseBtn" type="button" class="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-m3-primary text-m3-onPrimary text-xs font-medium hover:opacity-90 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-base" id="playPauseIcon">pause</span>
-                <span id="playPauseText">Pause</span>
-              </button>
-              <button id="restartAnimBtn" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 text-white text-xs font-medium hover:bg-white/20 active:scale-95 transition-all">
-                <span class="material-symbols-outlined text-base">replay</span>
-                <span>Restart</span>
-              </button>
-            </div>
-
-            <div class="flex items-center gap-3">
-              <span class="text-xs font-mono text-slate-400">Speed:</span>
-              <div class="flex items-center gap-1">
-                <button type="button" class="speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-white/10 text-slate-300 hover:bg-white/20" data-speed="0.5">0.5x</button>
-                <button type="button" class="speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-m3-primary text-m3-onPrimary font-bold" data-speed="1.0">1.0x</button>
-                <button type="button" class="speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-white/10 text-slate-300 hover:bg-white/20" data-speed="2.0">2.0x</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <button id="quickCopyPlain" type="button" class="p-3.5 rounded-2xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 hover:bg-m3-surfaceContainerHigh flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95">
-            <span class="material-symbols-outlined text-m3-primary text-xl">text_fields</span>
-            <span class="text-xs font-semibold">Plain Text</span>
-            <span class="text-[10px] text-m3-outline">No ANSI escapes</span>
-          </button>
-
-          <button id="quickCopyAnsi" type="button" class="p-3.5 rounded-2xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 hover:bg-m3-surfaceContainerHigh flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95">
-            <span class="material-symbols-outlined text-m3-primary text-xl">terminal</span>
-            <span class="text-xs font-semibold">Raw ANSI</span>
-            <span class="text-[10px] text-m3-outline">Terminal escape codes</span>
-          </button>
-
-          <button id="quickCopyHtml" type="button" class="p-3.5 rounded-2xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 hover:bg-m3-surfaceContainerHigh flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95">
-            <span class="material-symbols-outlined text-m3-primary text-xl">html</span>
-            <span class="text-xs font-semibold">HTML Spans</span>
-            <span class="text-[10px] text-m3-outline">Ready for web pages</span>
-          </button>
-
-          <button id="quickCopyPyEmbed" type="button" class="p-3.5 rounded-2xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 hover:bg-m3-surfaceContainerHigh flex flex-col items-center justify-center gap-1 text-center transition-all active:scale-95">
-            <span class="material-symbols-outlined text-m3-primary text-xl">data_object</span>
-            <span class="text-xs font-semibold">Python Embed</span>
-            <span class="text-[10px] text-m3-outline">Standalone runnable code</span>
-          </button>
-        </div>
-
-      </div>
-
-    </div>
-
-    <div id="tabExplorer" class="tab-content hidden flex-col gap-6">
-      
-      <div class="flex items-center justify-between flex-wrap gap-4 p-4 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-2xl bg-m3-secondaryContainer text-m3-onSecondaryContainer flex items-center justify-center">
-            <span class="material-symbols-outlined">folder_open</span>
-          </div>
-          <div>
-            <h2 class="text-sm font-bold tracking-tight">Virtual Studio Project Files</h2>
-            <p class="text-xs text-m3-onSurfaceVariant">Mirroring python build() layout: <span id="explorerProjectPath" class="font-mono font-semibold">00000/</span> with text/ and anim/</p>
-          </div>
-        </div>
-
-        <button id="downloadZipFromExplorer" type="button" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-m3-primary text-m3-onPrimary text-xs font-medium hover:opacity-90 active:scale-95 shadow transition-all">
-          <span class="material-symbols-outlined text-base">download_for_offline</span>
-          <span>Download Project as .ZIP</span>
+  <div class="app-layout">
+    <div class="controls-panel">
+      <nav class="nav-tabs">
+        <button class="nav-tab-btn active" data-tab="tab-text">
+          <span class="material-symbols-outlined">text_fields</span>
+          <span>Text & Font</span>
         </button>
-      </div>
+        <button class="nav-tab-btn" data-tab="tab-sliders">
+          <span class="material-symbols-outlined">tune</span>
+          <span>Sliders & FX</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-anim">
+          <span class="material-symbols-outlined">motion_photos_on</span>
+          <span>Animation</span>
+        </button>
+        <button class="nav-tab-btn" data-tab="tab-export">
+          <span class="material-symbols-outlined">download</span>
+          <span>Media Export</span>
+        </button>
+      </nav>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <div class="lg:col-span-4 p-4 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-3">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-m3-outline px-2">Project Hierarchy</span>
-          
-          <div class="flex flex-col gap-1 font-mono text-xs" id="fileTreeContainer">
+      <div class="tab-content-area">
+        <div class="tab-page active" id="tab-text">
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">edit</span>
+              Text Input
+            </div>
+            <div class="field-group">
+              <input type="text" id="input-text" class="text-input" value="OPENTEXT" placeholder="Type text (ENG / RUS)..." autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">font_download</span>
+              Typography Style
+            </div>
+            <div class="chip-group" id="font-style-chips">
+              <div class="chip active" data-font="5x5">5x5 Bitmap (ENG + RUS)</div>
+              <div class="chip" data-font="shadow">ANSI Shadow (6 Rows)</div>
+            </div>
+            <div class="switch-row" id="row-box-frame">
+              <span class="field-label" style="margin:0;">Border Box Panel</span>
+              <label class="switch-wrap">
+                <input type="checkbox" id="check-box-frame">
+                <span class="switch-track"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card" id="card-glyph">
+            <div class="card-title">
+              <span class="material-symbols-outlined">grid_view</span>
+              Fill Glyph (5x5 Font)
+            </div>
+            <div class="chip-group" id="glyph-chips">
+              <div class="chip active" data-glyph="█">█ Solid</div>
+              <div class="chip" data-glyph="#"># Hash</div>
+              <div class="chip" data-glyph="@">@ At</div>
+              <div class="chip" data-glyph="▓">▓ Shade</div>
+              <div class="chip" data-glyph="*">* Star</div>
+              <div class="chip" data-glyph="▲">▲ Triangle</div>
+              <div class="chip" data-glyph="custom">Custom...</div>
+            </div>
+            <input type="text" id="input-custom-glyph" class="text-input" maxlength="2" placeholder="Custom character..." style="display:none;margin-top:6px;">
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">palette</span>
+              Color Palette
+            </div>
+            <div class="chip-group" id="color-mode-chips" style="margin-bottom:8px;">
+              <div class="chip active" data-mode="solid">Solid Color</div>
+              <div class="chip" data-mode="gradient">Horiz Gradient</div>
+              <div class="chip" data-mode="perrow">Row by Row</div>
+            </div>
+
+            <div id="palette-solid-wrap">
+              <div class="field-label" style="margin-bottom:6px;">16 ANSI Terminal Colors</div>
+              <div class="color-swatch-picker" id="swatch-container"></div>
+            </div>
+
+            <div id="palette-grad-wrap" style="display:none;">
+              <div class="field-label" style="margin-bottom:6px;">Gradient Preset</div>
+              <div class="chip-group" id="gradient-chips">
+                <div class="chip active" data-grad="rainbow">Rainbow</div>
+                <div class="chip" data-grad="fire">Fire</div>
+                <div class="chip" data-grad="ocean">Ocean</div>
+                <div class="chip" data-grad="forest">Forest</div>
+                <div class="chip" data-grad="sunset">Sunset</div>
+                <div class="chip" data-grad="cyberpunk">Cyberpunk</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="lg:col-span-8 flex flex-col gap-3">
-          <div class="p-4 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex items-center justify-between flex-wrap gap-2">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-m3-primary" id="currentFileIcon">description</span>
-              <span id="currentFileName" class="text-xs font-mono font-bold">solid.txt</span>
-              <span id="currentFileSize" class="text-[10px] px-2 py-0.5 rounded-full bg-m3-surfaceContainerHighest text-m3-outline">0 bytes</span>
+        <div class="tab-page" id="tab-sliders">
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">aspect_ratio</span>
+              Size & Scale
+            </div>
+            <div class="slider-container" id="scale-slider-wrap">
+              <div class="field-label">
+                <span>5x5 Glyph Scale Multiplier</span>
+                <span class="field-val" id="val-glyph-scale">1x</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-glyph-scale" min="1" max="5" step="1" value="1">
             </div>
 
-            <div class="flex items-center gap-2">
-              <button id="copyActiveFileBtn" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-medium hover:bg-m3-surfaceContainerHighest transition-all">
-                <span class="material-symbols-outlined text-sm">content_copy</span> Copy File
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Terminal Font Size</span>
+                <span class="field-val" id="val-font-size">13px</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-font-size" min="6" max="44" step="1" value="13">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Line Spacing (Height)</span>
+                <span class="field-val" id="val-line-height">1.15</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-line-height" min="0.75" max="2.0" step="0.05" value="1.15">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Letter Spacing</span>
+                <span class="field-val" id="val-letter-spacing">0px</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-letter-spacing" min="-2" max="10" step="1" value="0">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Terminal Padding</span>
+                <span class="field-val" id="val-padding">20px</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-padding" min="6" max="50" step="2" value="20">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">speed</span>
+              Animation Motion
+            </div>
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Playback Speed Multiplier</span>
+                <span class="field-val" id="val-anim-speed">1.0x</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-anim-speed" min="0.1" max="4.0" step="0.1" value="1.0">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Video Record Length</span>
+                <span class="field-val" id="val-record-sec">4s</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-record-sec" min="2" max="10" step="1" value="4">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">tv</span>
+              CRT Glow & Retro Monitor FX
+            </div>
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Scanline Intensity</span>
+                <span class="field-val" id="val-scanlines">35%</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-scanlines" min="0" max="100" step="5" value="35">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Glow / Bloom Radius</span>
+                <span class="field-val" id="val-glow">6px</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-glow" min="0" max="30" step="1" value="6">
+            </div>
+
+            <div class="slider-container">
+              <div class="field-label">
+                <span>Viewport Zoom / Fit</span>
+                <span class="field-val" id="val-zoom">100%</span>
+              </div>
+              <input type="range" class="range-slider" id="slider-zoom" min="30" max="200" step="5" value="100">
+            </div>
+            <button class="btn btn-secondary" id="btn-autofit-zoom" style="margin-top:6px;">
+              <span class="material-symbols-outlined">fit_screen</span>
+              Auto-Fit to Width
+            </button>
+          </div>
+        </div>
+
+        <div class="tab-page" id="tab-anim">
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">animation</span>
+              Animation Engine (11 Modes)
+            </div>
+            <div class="chip-group" id="anim-type-chips">
+              <div class="chip active" data-anim="none">None (Static)</div>
+              <div class="chip" data-anim="typewriter">Typewriter</div>
+              <div class="chip" data-anim="pulse">Pulse</div>
+              <div class="chip" data-anim="rainbow_sweep">Rainbow Sweep</div>
+              <div class="chip" data-anim="fade_in">Fade In</div>
+              <div class="chip" data-anim="slide_left">Slide Left</div>
+              <div class="chip" data-anim="blink">Blink</div>
+              <div class="chip" data-anim="row_by_row">Row by Row</div>
+              <div class="chip" data-anim="wave">Wave</div>
+              <div class="chip" data-anim="sparkle">Sparkle</div>
+              <div class="chip" data-anim="gradient_cycle">Gradient Cycle</div>
+              <div class="chip" data-anim="logo_animated">Logo Animated (Box)</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">play_circle</span>
+              Playback Settings
+            </div>
+            <div class="switch-row">
+              <span class="field-label" style="margin:0;">Continuous Infinite Loop</span>
+              <label class="switch-wrap">
+                <input type="checkbox" id="check-anim-loop" checked>
+                <span class="switch-track"></span>
+              </label>
+            </div>
+            <button class="btn btn-primary" id="btn-replay-anim" style="margin-top:8px;">
+              <span class="material-symbols-outlined">replay</span>
+              Replay Animation
+            </button>
+          </div>
+        </div>
+
+        <div class="tab-page" id="tab-export">
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">video_camera_back</span>
+              Video Export (WebM)
+            </div>
+            <p style="font-size:0.83rem;color:var(--md-on-surface-variant);line-height:1.4;">
+              Records the animated terminal canvas directly into high-fidelity WebM video.
+            </p>
+            <button class="btn btn-primary" id="btn-export-video">
+              <span class="material-symbols-outlined">videocam</span>
+              Export Video (.webm)
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">image</span>
+              Photo & Snapshot (PNG)
+            </div>
+            <p style="font-size:0.83rem;color:var(--md-on-surface-variant);line-height:1.4;">
+              Renders a pixel-perfect PNG image snapshot of the current terminal screen with CRT effects and scanlines.
+            </p>
+            <button class="btn btn-tonal" id="btn-export-photo">
+              <span class="material-symbols-outlined">photo_camera</span>
+              Export Photo (.png)
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">folder_zip</span>
+              OpenText Studio Project (ZIP)
+            </div>
+            <p style="font-size:0.83rem;color:var(--md-on-surface-variant);line-height:1.4;">
+              Generates a full project bundle matching the Python CLI (all 9 static ANSI text files and 11 executable animation scripts).
+            </p>
+            <button class="btn btn-secondary" id="btn-export-zip">
+              <span class="material-symbols-outlined">archive</span>
+              Download Project ZIP
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <span class="material-symbols-outlined">content_copy</span>
+              Clipboard Copy
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-secondary" id="btn-copy-plain" style="flex:1;">
+                <span class="material-symbols-outlined">content_paste</span>
+                Copy Plain ASCII
               </button>
-              <button id="downloadActiveFileBtn" type="button" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-m3-primary text-m3-onPrimary text-xs font-medium hover:opacity-90 transition-all">
-                <span class="material-symbols-outlined text-sm">download</span> Download
+              <button class="btn btn-secondary" id="btn-copy-ansi" style="flex:1;">
+                <span class="material-symbols-outlined">code</span>
+                Copy ANSI Codes
               </button>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="relative rounded-3xl border border-m3-outlineVariant/50 overflow-hidden shadow-inner" style="background-color: var(--term-bg);">
-            <div class="px-4 py-2 bg-black/40 border-b border-white/10 flex items-center justify-between text-[11px] font-mono text-slate-400">
-              <span id="fileViewerPath">00000/text/solid.txt</span>
-              <span>UTF-8</span>
-            </div>
-            <pre id="fileViewerCode" class="p-5 font-mono text-xs text-slate-200 overflow-x-auto custom-scroll whitespace-pre min-h-[380px] max-h-[560px]"></pre>
-          </div>
+    <div class="preview-panel">
+      <div class="preview-toolbar">
+        <div class="playback-controls">
+          <button class="icon-btn" id="btn-play-pause" title="Play/Pause Animation">
+            <span class="material-symbols-outlined" id="icon-play-pause">pause</span>
+          </button>
+          <button class="icon-btn" id="btn-restart" title="Restart">
+            <span class="material-symbols-outlined">replay</span>
+          </button>
+          <span style="font-size:0.82rem;font-family:'Fira Code',monospace;color:var(--md-primary);font-weight:600;" id="display-mode-label">
+            STATIC
+          </span>
         </div>
 
+        <div class="quick-export-group">
+          <button class="btn btn-tonal" id="btn-quick-photo" style="min-height:36px;padding:6px 12px;font-size:0.8rem;">
+            <span class="material-symbols-outlined" style="font-size:18px;">photo_camera</span>
+            <span>Photo</span>
+          </button>
+          <button class="btn btn-primary" id="btn-quick-video" style="min-height:36px;padding:6px 12px;font-size:0.8rem;">
+            <span class="material-symbols-outlined" style="font-size:18px;">videocam</span>
+            <span>Video</span>
+          </button>
+        </div>
       </div>
 
-    </div>
-
-    <div id="tabExport" class="tab-content hidden flex-col gap-6">
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        <div class="p-6 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-m3-primaryContainer text-m3-onPrimaryContainer flex items-center justify-center">
-                <span class="material-symbols-outlined text-base">integration_instructions</span>
+      <div class="term-container" id="term-container-el">
+        <div class="term-wrapper" id="term-wrapper-el">
+          <div class="term-screen" id="term-screen-el">
+            <div class="term-header-bar">
+              <div class="term-dots">
+                <span class="term-dot dot-red"></span>
+                <span class="term-dot dot-yellow"></span>
+                <span class="term-dot dot-green"></span>
               </div>
-              <h3 class="text-sm font-bold">Python Integration Snippet</h3>
+              <span class="term-header-title" id="term-header-title">opentext — 80x24</span>
+              <span style="width:36px;"></span>
             </div>
-            <button id="copyPythonSnippetBtn" type="button" class="px-3 py-1 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-medium hover:bg-m3-surfaceContainerHighest">Copy</button>
-          </div>
-          <p class="text-xs text-m3-onSurfaceVariant">Embed the generated ASCII animation into any Python command-line utility or microservice.</p>
-          <pre id="pythonSnippetBox" class="p-4 rounded-2xl bg-black/60 border border-white/10 text-emerald-400 font-mono text-xs overflow-x-auto custom-scroll whitespace-pre"></pre>
-        </div>
-
-        <div class="p-6 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-m3-secondaryContainer text-m3-onSecondaryContainer flex items-center justify-center">
-                <span class="material-symbols-outlined text-base">code_blocks</span>
-              </div>
-              <h3 class="text-sm font-bold">HTML & CSS Embed</h3>
-            </div>
-            <button id="copyHtmlSnippetBtn" type="button" class="px-3 py-1 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-medium hover:bg-m3-surfaceContainerHighest">Copy</button>
-          </div>
-          <p class="text-xs text-m3-onSurfaceVariant">Colored spans ready for insertion into dark-mode developer portals, docs, or web footers.</p>
-          <pre id="htmlSnippetBox" class="p-4 rounded-2xl bg-black/60 border border-white/10 text-sky-300 font-mono text-xs overflow-x-auto custom-scroll whitespace-pre max-h-[220px]"></pre>
-        </div>
-
-        <div class="p-6 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-m3-tertiaryContainer text-m3-onTertiaryContainer flex items-center justify-center">
-                <span class="material-symbols-outlined text-base">terminal</span>
-              </div>
-              <h3 class="text-sm font-bold">Bash / ANSI Shell File</h3>
-            </div>
-            <button id="downloadBashBtn" type="button" class="px-3 py-1 rounded-full bg-m3-surfaceContainerHigh border border-m3-outlineVariant/50 text-xs font-medium hover:bg-m3-surfaceContainerHighest">Download .sh</button>
-          </div>
-          <p class="text-xs text-m3-onSurfaceVariant">Run directly with <code class="font-mono text-m3-primary">cat banner.txt</code> in bash or zsh terminal.</p>
-          <pre id="bashSnippetBox" class="p-4 rounded-2xl bg-black/60 border border-white/10 text-amber-300 font-mono text-xs overflow-x-auto custom-scroll whitespace-pre"></pre>
-        </div>
-
-        <div class="p-6 rounded-3xl bg-m3-surfaceContainer border border-m3-outlineVariant/40 flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-m3-primaryContainer text-m3-onPrimaryContainer flex items-center justify-center">
-                <span class="material-symbols-outlined text-base">folder_zip</span>
-              </div>
-              <h3 class="text-sm font-bold">Complete Studio Package</h3>
-            </div>
-            <button id="downloadZipFromTab" type="button" class="px-3 py-1 rounded-full bg-m3-primary text-m3-onPrimary text-xs font-medium hover:opacity-90">Download ZIP</button>
-          </div>
-          <p class="text-xs text-m3-onSurfaceVariant">Packages all 9 static text files and 11 standalone Python animations with README instructions.</p>
-          <div class="p-4 rounded-2xl bg-m3-surfaceContainerHigh border border-m3-outlineVariant/40 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <span class="material-symbols-outlined text-3xl text-m3-primary">inventory_2</span>
-              <div>
-                <p class="text-xs font-mono font-bold" id="zipNameLabel">opentext_studio_00000.zip</p>
-                <p class="text-[10px] text-m3-outline">20 files total (text/ and anim/)</p>
-              </div>
-            </div>
-            <span class="text-xs font-mono text-emerald-500 font-bold">Ready</span>
+            <div class="term-display" id="term-display"></div>
+            <div class="crt-scanlines" id="crt-scanlines-el"></div>
           </div>
         </div>
-
       </div>
-
     </div>
-
-  </main>
-
-  <footer class="mt-auto border-t border-m3-outlineVariant/30 bg-m3-surfaceContainer px-4 py-4 text-center text-xs text-m3-onSurfaceVariant">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-      <p>OpenText Studio &bull; Full Material You 3 Web Port (ENG + RUS fonts supported)</p>
-      <p class="font-mono text-[11px] text-m3-outline">Standard ANSI 16 + 24-bit Virtual Gradients</p>
-    </div>
-  </footer>
-
-  <div id="toastMessage" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-5 py-3 rounded-full bg-m3-inverseSurface text-m3-inverseOnSurface shadow-xl text-xs font-medium" style="background-color: #313033; color: #f4eff4;">
-    <span class="material-symbols-outlined text-sm text-emerald-400" id="toastIcon">check_circle</span>
-    <span id="toastText">Action successful</span>
   </div>
+
+  <div class="modal-overlay" id="modal-video-progress">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span class="material-symbols-outlined" style="color:var(--md-primary);">videocam</span>
+        Recording Video...
+      </div>
+      <p style="font-size:0.85rem;color:var(--md-on-surface-variant);" id="modal-video-status">
+        Capturing terminal canvas frames in real-time. Please wait...
+      </p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="video-progress-fill"></div>
+      </div>
+      <div class="modal-meta">
+        <span id="video-progress-percent">0%</span>
+        <span id="video-progress-time">0.0s / 4.0s</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-msg" id="toast-msg">
+    <span class="material-symbols-outlined" style="font-size:18px;">check_circle</span>
+    <span id="toast-text">Operation completed</span>
+  </div>
+
+  <canvas id="render-canvas"></canvas>
 
   <script>
     const FONT_5X5 = {
-      'A':["01110","10001","11111","10001","10001"],
-      'B':["11110","10001","11110","10001","11110"],
-      'C':["01111","10000","10000","10000","01111"],
-      'D':["11110","10001","10001","10001","11110"],
-      'E':["11111","10000","11110","10000","11111"],
-      'F':["11111","10000","11110","10000","10000"],
-      'G':["01111","10000","10111","10001","01111"],
-      'H':["10001","10001","11111","10001","10001"],
-      'I':["11111","00100","00100","00100","11111"],
-      'J':["00111","00010","00010","10010","01100"],
-      'K':["10001","10010","11100","10010","10001"],
-      'L':["10000","10000","10000","10000","11111"],
-      'M':["10001","11011","10101","10001","10001"],
-      'N':["10001","11001","10101","10011","10001"],
-      'O':["01110","10001","10001","10001","01110"],
-      'P':["11110","10001","11110","10000","10000"],
-      'Q':["01110","10001","10101","10010","01101"],
-      'R':["11110","10001","11110","10010","10001"],
-      'S':["01111","10000","01110","00001","11110"],
-      'T':["11111","00100","00100","00100","00100"],
-      'U':["10001","10001","10001","10001","01110"],
-      'V':["10001","10001","10001","01010","00100"],
-      'W':["10001","10001","10101","11011","10001"],
-      'X':["10001","01010","00100","01010","10001"],
-      'Y':["10001","01010","00100","00100","00100"],
-      'Z':["11111","00010","00100","01000","11111"],
-      '0':["01110","10011","10101","11001","01110"],
-      '1':["00100","01100","00100","00100","01110"],
-      '2':["01110","10001","00110","01000","11111"],
-      '3':["11110","00001","01110","00001","11110"],
-      '4':["00010","00110","01010","11111","00010"],
-      '5':["11111","10000","11110","00001","11110"],
-      '6':["01110","10000","11110","10001","01110"],
-      '7':["11111","00001","00010","00100","01000"],
-      '8':["01110","10001","01110","10001","01110"],
-      '9':["01110","10001","01111","00001","01110"],
-      ' ':["00000","00000","00000","00000","00000"],
-      '.':["00000","00000","00000","00000","00100"],
-      ',':["00000","00000","00000","00100","01000"],
-      '!':["00100","00100","00100","00000","00100"],
-      '?':["01110","10001","00110","00000","00100"],
-      '-':["00000","00000","11111","00000","00000"],
-      '_':["00000","00000","00000","00000","11111"],
-      ':':["00000","00100","00000","00100","00000"],
-      '+':["00000","00100","11111","00100","00000"],
-      '/':["00001","00010","00100","01000","10000"],
-      'А':["01110","10001","11111","10001","10001"],
-      'Б':["11111","10000","11110","10001","11110"],
-      'В':["11110","10001","11110","10001","11110"],
-      'Г':["11111","10000","10000","10000","10000"],
-      'Д':["00110","01010","01010","11111","10001"],
-      'Е':["11111","10000","11110","10000","11111"],
-      'Ё':["01010","11111","10000","11110","11111"],
-      'Ж':["10101","10101","11111","10101","10101"],
-      'З':["11110","00001","01110","00001","11110"],
-      'И':["10001","10011","10101","11001","10001"],
-      'Й':["01010","10011","10101","11001","10001"],
-      'К':["10001","10010","11100","10010","10001"],
-      'Л':["00110","01010","01010","01010","10001"],
-      'М':["10001","11011","10101","10001","10001"],
-      'Н':["10001","10001","11111","10001","10001"],
-      'О':["01110","10001","10001","10001","01110"],
-      'П':["11111","10001","10001","10001","10001"],
-      'Р':["11110","10001","11110","10000","10000"],
-      'С':["01111","10000","10000","10000","01111"],
-      'Т':["11111","00100","00100","00100","00100"],
-      'У':["10001","10001","01111","00001","11110"],
-      'Ф':["00100","01110","10101","11111","01110"],
-      'Х':["10001","01010","00100","01010","10001"],
-      'Ц':["10001","10001","10001","11111","00001"],
-      'Ч':["10001","10001","01111","00001","00001"],
-      'Ш':["10101","10101","10101","10101","11111"],
-      'Щ':["10101","10101","10101","11111","00001"],
-      'Ъ':["11000","01000","01110","01001","01110"],
-      'Ы':["10001","10001","11101","10011","11101"],
-      'Ь':["10000","10000","11110","10001","11110"],
-      'Э':["01110","10001","00111","10001","01110"],
-      'Ю':["10100","10110","11101","10101","10110"],
-      'Я':["01111","10001","01111","00101","10001"],
+      'A':["01110","10001","11111","10001","10001"],'B':["11110","10001","11110","10001","11110"],
+      'C':["01111","10000","10000","10000","01111"],'D':["11110","10001","10001","10001","11110"],
+      'E':["11111","10000","11110","10000","11111"],'F':["11111","10000","11110","10000","10000"],
+      'G':["01111","10000","10111","10001","01111"],'H':["10001","10001","11111","10001","10001"],
+      'I':["11111","00100","00100","00100","11111"],'J':["00111","00010","00010","10010","01100"],
+      'K':["10001","10010","11100","10010","10001"],'L':["10000","10000","10000","10000","11111"],
+      'M':["10001","11011","10101","10001","10001"],'N':["10001","11001","10101","10011","10001"],
+      'O':["01110","10001","10001","10001","01110"],'P':["11110","10001","11110","10000","10000"],
+      'Q':["01110","10001","10101","10010","01101"],'R':["11110","10001","11110","10010","10001"],
+      'S':["01111","10000","01110","00001","11110"],'T':["11111","00100","00100","00100","00100"],
+      'U':["10001","10001","10001","10001","01110"],'V':["10001","10001","10001","01010","00100"],
+      'W':["10001","10001","10101","11011","10001"],'X':["10001","01010","00100","01010","10001"],
+      'Y':["10001","01010","00100","00100","00100"],'Z':["11111","00010","00100","01000","11111"],
+      '0':["01110","10011","10101","11001","01110"],'1':["00100","01100","00100","00100","01110"],
+      '2':["01110","10001","00110","01000","11111"],'3':["11110","00001","01110","00001","11110"],
+      '4':["00010","00110","01010","11111","00010"],'5':["11111","10000","11110","00001","11110"],
+      '6':["01110","10000","11110","10001","01110"],'7':["11111","00001","00010","00100","01000"],
+      '8':["01110","10001","01110","10001","01110"],'9':["01110","10001","01111","00001","01110"],
+      ' ':["00000","00000","00000","00000","00000"],'.':["00000","00000","00000","00000","00100"],
+      ',':["00000","00000","00000","00100","01000"],'!':["00100","00100","00100","00000","00100"],
+      '?':["01110","10001","00110","00000","00100"],'-':["00000","00000","11111","00000","00000"],
+      '_':["00000","00000","00000","00000","11111"],':':["00000","00100","00000","00100","00000"],
+      '+':["00000","00100","11111","00100","00000"],'/':["00001","00010","00100","01000","10000"],
+      'А':["01110","10001","11111","10001","10001"],'Б':["11111","10000","11110","10001","11110"],
+      'В':["11110","10001","11110","10001","11110"],'Г':["11111","10000","10000","10000","10000"],
+      'Д':["00110","01010","01010","11111","10001"],'Е':["11111","10000","11110","10000","11111"],
+      'Ё':["01010","11111","10000","11110","11111"],'Ж':["10101","10101","11111","10101","10101"],
+      'З':["11110","00001","01110","00001","11110"],'И':["10001","10011","10101","11001","10001"],
+      'Й':["01010","10011","10101","11001","10001"],'К':["10001","10010","11100","10010","10001"],
+      'Л':["00110","01010","01010","01010","10001"],'М':["10001","11011","10101","10001","10001"],
+      'Н':["10001","10001","11111","10001","10001"],'О':["01110","10001","10001","10001","01110"],
+      'П':["11111","10001","10001","10001","10001"],'Р':["11110","10001","11110","10000","10000"],
+      'С':["01111","10000","10000","10000","01111"],'Т':["11111","00100","00100","00100","00100"],
+      'У':["10001","10001","01111","00001","11110"],'Ф':["00100","01110","10101","11111","01110"],
+      'Х':["10001","01010","00100","01010","10001"],'Ц':["10001","10001","10001","11111","00001"],
+      'Ч':["10001","10001","01111","00001","00001"],'Ш':["10101","10101","10101","10101","11111"],
+      'Щ':["10101","10101","10101","11111","00001"],'Ъ':["11000","01000","01110","01001","01110"],
+      'Ы':["10001","10001","11101","10011","11101"],'Ь':["10000","10000","11110","10001","11110"],
+      'Э':["01110","10001","00111","10001","01110"],'Ю':["10100","10110","11101","10101","10110"],
+      'Я':["01111","10001","01111","00101","10001"]
     };
 
     const SHADOW_FONT = {
@@ -690,1321 +1288,886 @@
       ':':["   ","██╗","╚═╝","██╗","╚═╝","   "]
     };
 
-    const ANSI_16_MAP = {
-      "black": { code: 30, hex: "#1e1e1e", label: "Black" },
-      "red": { code: 31, hex: "#ef4444", label: "Red" },
-      "green": { code: 32, hex: "#22c55e", label: "Green" },
-      "yellow": { code: 33, hex: "#eab308", label: "Yellow" },
-      "blue": { code: 34, hex: "#3b82f6", label: "Blue" },
-      "magenta": { code: 35, hex: "#d946ef", label: "Magenta" },
-      "cyan": { code: 36, hex: "#06b6d4", label: "Cyan" },
-      "white": { code: 37, hex: "#e2e8f0", label: "White" },
-      "bright_black": { code: 90, hex: "#64748b", label: "Bright Black" },
-      "bright_red": { code: 91, hex: "#f87171", label: "Bright Red" },
-      "bright_green": { code: 92, hex: "#4ade80", label: "Bright Green" },
-      "bright_yellow": { code: 93, hex: "#fde047", label: "Bright Yellow" },
-      "bright_blue": { code: 94, hex: "#60a5fa", label: "Bright Blue" },
-      "bright_magenta": { code: 95, hex: "#f472b6", label: "Bright Magenta" },
-      "bright_cyan": { code: 96, hex: "#38bdf8", label: "Bright Cyan" },
-      "bright_white": { code: 97, hex: "#ffffff", label: "Bright White" }
-    };
-
-    const ANSI_CODE_TO_HEX = {
-      30: "#1e1e1e", 31: "#ef4444", 32: "#22c55e", 33: "#eab308",
-      34: "#3b82f6", 35: "#d946ef", 36: "#06b6d4", 37: "#e2e8f0",
-      90: "#64748b", 91: "#f87171", 92: "#4ade80", 93: "#fde047",
-      94: "#60a5fa", 95: "#f472b6", 96: "#38bdf8", 97: "#ffffff"
+    const ANSI_COLORS = {
+      30: { name:"black", hex:"#555555" },
+      31: { name:"red", hex:"#ff5555" },
+      32: { name:"green", hex:"#50fa7b" },
+      33: { name:"yellow", hex:"#f1fa8c" },
+      34: { name:"blue", hex:"#bd93f9" },
+      35: { name:"magenta", hex:"#ff79c6" },
+      36: { name:"cyan", hex:"#8be9fd" },
+      37: { name:"white", hex:"#f8f8f2" },
+      90: { name:"bright_black", hex:"#6272a4" },
+      91: { name:"bright_red", hex:"#ff6e6e" },
+      92: { name:"bright_green", hex:"#69ff94" },
+      93: { name:"bright_yellow", hex:"#ffffa5" },
+      94: { name:"bright_blue", hex:"#d6acff" },
+      95: { name:"bright_magenta", hex:"#ff92df" },
+      96: { name:"bright_cyan", hex:"#a4ffff" },
+      97: { name:"bright_white", hex:"#ffffff" }
     };
 
     const GRADIENTS = {
-      "rainbow": { codes: [91, 93, 92, 96, 94, 95], label: "Rainbow" },
-      "fire": { codes: [91, 93, 33, 31], label: "Fire" },
-      "ocean": { codes: [94, 96, 36, 34], label: "Ocean" },
-      "forest": { codes: [92, 32, 36, 92], label: "Forest" },
-      "sunset": { codes: [91, 95, 35, 94], label: "Sunset" },
-      "cyberpunk": { codes: [95, 96, 92, 93], label: "Cyberpunk" }
+      fire: [91, 93, 33, 31],
+      ocean: [94, 96, 36, 34],
+      forest: [92, 32, 36, 92],
+      rainbow: [91, 93, 92, 96, 94, 95],
+      sunset: [91, 95, 93, 33],
+      cyberpunk: [96, 95, 94, 92]
     };
 
-    const ANIM_PYTHON_TEMPLATES = {
-      "typewriter": `def _run(delay=0.004):
-    for line in ART:
-        for ch in line:
-            sys.stdout.write(ch)
-            sys.stdout.flush()
-            time.sleep(delay)
-        sys.stdout.write("\\n")
-    sys.stdout.flush()`,
-
-      "pulse": `def _run(interval=0.25, cycles=20):
-    for i in range(cycles):
-        code = COLORS[i % len(COLORS)]
-        sys.stdout.write("\\033[H\\033[J")
-        for line in ART:
-            sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (code, line))
-        sys.stdout.flush()
-        time.sleep(interval)`,
-
-      "rainbow_sweep": `def _run(interval=0.06, cycles=32):
-    offset = 0
-    for _ in range(cycles):
-        sys.stdout.write("\\033[H\\033[J")
-        for line in ART:
-            s = []
-            for i, ch in enumerate(line):
-                idx = (i + offset) % len(COLORS)
-                s.append("\\033[%dm%s" % (COLORS[idx], ch))
-            sys.stdout.write("".join(s) + "\\033[0m\\n")
-        sys.stdout.flush()
-        offset += 1
-        time.sleep(interval)`,
-
-      "fade_in": `def _run(hold=0.2):
-    for shade in (90, 37, 97):
-        sys.stdout.write("\\033[H\\033[J")
-        for line in ART:
-            sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (shade, line))
-        sys.stdout.flush()
-        time.sleep(hold)
-    sys.stdout.write("\\033[H\\033[J")
-    for line in ART:
-        sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[0], line))
-    sys.stdout.flush()`,
-
-      "slide_left": `def _run(delay=0.03):
-    width = max((len(l) for l in ART), default=0)
-    for pad in range(width, -1, -4):
-        sys.stdout.write("\\033[H\\033[J")
-        for line in ART:
-            sys.stdout.write("\\033[%dm%s%s\\033[0m\\n" % (COLORS[0], " " * pad, line))
-        sys.stdout.flush()
-        time.sleep(delay)
-    sys.stdout.write("\\033[H\\033[J")
-    for line in ART:
-        sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[0], line))
-    sys.stdout.flush()`,
-
-      "blink": `def _run(interval=0.35, cycles=10):
-    for i in range(cycles):
-        sys.stdout.write("\\033[H\\033[J")
-        code = COLORS[i % len(COLORS)] if (i % 2 == 0) else 30
-        for line in ART:
-            sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (code, line))
-        sys.stdout.flush()
-        time.sleep(interval)
-    sys.stdout.write("\\033[H\\033[J")
-    for line in ART:
-        sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[0], line))
-    sys.stdout.flush()`,
-
-      "row_by_row": `def _run(delay=0.12):
-    for line in ART:
-        sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[0], line))
-        sys.stdout.flush()
-        time.sleep(delay)`,
-
-      "wave": `def _run(delay=0.1, cycles=3):
-    for _ in range(cycles):
-        for phase in range(len(ART) + len(COLORS)):
-            sys.stdout.write("\\033[H\\033[J")
-            for i, line in enumerate(ART):
-                idx = (i + phase) % len(COLORS)
-                sys.stdout.write("\\033[%dm%s\\033[0m\\n" % (COLORS[idx], line))
-            sys.stdout.flush()
-            time.sleep(delay)`,
-
-      "sparkle": `def _run(delay=0.02, rounds=12):
-    import random as _r
-    targets = [(i, j) for i, l in enumerate(ART) for j, c in enumerate(l) if c != " "]
-    if not targets:
-        return
-    _r.shuffle(targets)
-    step = max(1, len(targets) // (rounds * 6))
-    revealed = set()
-    cur = 0
-    while cur < len(targets):
-        for _ in range(step):
-            if cur < len(targets):
-                revealed.add(targets[cur]); cur += 1
-        sys.stdout.write("\\033[H\\033[J")
-        for i, line in enumerate(ART):
-            s = []
-            for j, ch in enumerate(line):
-                if ch == " " or (i, j) in revealed:
-                    s.append("\\033[%dm%s" % (COLORS[0], ch))
-                else:
-                    s.append(" ")
-            sys.stdout.write("".join(s) + "\\033[0m\\n")
-        sys.stdout.flush()
-        time.sleep(delay)`,
-
-      "gradient_cycle": `def _run(interval=0.06, cycles=40):
-    offset = 0
-    for _ in range(cycles):
-        sys.stdout.write("\\033[H\\033[J")
-        for line in ART:
-            s = []
-            for i, ch in enumerate(line):
-                idx = (i + offset) % len(COLORS)
-                s.append("\\033[%dm%s" % (COLORS[idx], ch))
-            sys.stdout.write("".join(s) + "\\033[0m\\n")
-        sys.stdout.flush()
-        offset += 1
-        time.sleep(interval)`,
-
-      "logo_animated": `def _run(char_delay=0.0018, row_delay=0.05):
-    GRAY = "\\033[90m"
-    R = "\\033[0m"
-    inner = max((len(l) for l in ART), default=0) + 2
-
-    print()
-    sys.stdout.write(GRAY + "  ┌" + "─" * inner + "┐" + R + "\\n")
-    sys.stdout.write(GRAY + "  │" + R + " " * inner + GRAY + "│" + R + "\\n")
-
-    for i, line in enumerate(ART):
-        col = COLORS[i % len(COLORS)]
-        sys.stdout.write(GRAY + "  │" + R + "  ")
-        for ch in line:
-            sys.stdout.write(col + ch + R)
-            sys.stdout.flush()
-            time.sleep(char_delay)
-        pad = inner - 2 - len(line)
-        if pad < 0:
-            pad = 0
-        sys.stdout.write(" " * pad)
-        sys.stdout.write(GRAY + "│" + R + "\\n")
-        time.sleep(row_delay)
-
-    sys.stdout.write(GRAY + "  │" + R + " " * inner + GRAY + "│" + R + "\\n")
-    sys.stdout.write(GRAY + "  └" + "─" * inner + "┘" + R + "\\n")
-    print()`
-    };
-
-    let state = {
-      projectId: "48291",
+    const state = {
       text: "OPENTEXT",
-      font: "5x5",
-      fillChar: "█",
-      scale: 1,
-      framed: false,
-      colorMode: "gradient",
-      solidColor: "bright_green",
-      gradient: "rainbow",
-      animType: "rainbow_sweep",
+      fontStyle: "5x5",
+      fillGlyph: "█",
+      glyphScale: 1,
+      fontSize: 13,
+      lineHeight: 1.15,
+      letterSpacing: 0,
+      padding: 20,
+      colorMode: "solid",
+      solidColor: 92,
+      gradientName: "rainbow",
+      boxFrame: false,
+      animType: "none",
+      animSpeed: 1.0,
+      recordSec: 4,
+      scanlines: 35,
+      glow: 6,
+      zoom: 100,
       isPlaying: true,
-      speed: 1.0,
-      animFrameId: null,
-      animStep: 0,
-      animPhase: 0,
-      sparkleRevealed: new Set(),
-      activeTab: "studio",
-      selectedFileKey: "text/solid.txt",
-      virtualFiles: {}
+      loop: true,
+      theme: "dark"
     };
 
-    function generateRandomProjectId() {
-      return String(Math.floor(10000 + Math.random() * 90000));
-    }
+    let animTimer = null;
+    let animFrame = 0;
+    let animLines = [];
+    let isRecordingVideo = false;
 
-    function render5x5(text, fillChar, scale) {
+    function renderRaw5x5(text, glyph, scale) {
       scale = Math.max(1, parseInt(scale) || 1);
       const rows = ["", "", "", "", ""];
-      const upper = (text || "A").toUpperCase();
-      for (let i = 0; i < upper.length; i++) {
-        const ch = upper[i];
-        const bm = FONT_5X5[ch] || FONT_5X5['?'] || ["00000","00000","00000","00000","00000"];
-        for (let r = 0; r < 5; r++) {
-          rows[r] += bm[r] + " ";
+      const upper = (text || "").toUpperCase();
+      for (let ch of upper) {
+        const bm = FONT_5X5[ch] || FONT_5X5['?'];
+        for (let i = 0; i < 5; i++) {
+          rows[i] += bm[i] + " ";
         }
       }
       const out = [];
-      for (let r = 0; r < 5; r++) {
-        let scaledRow = "";
-        for (let c = 0; c < rows[r].length; c++) {
-          const charToRepeat = (rows[r][c] === '1') ? fillChar : ' ';
-          scaledRow += charToRepeat.repeat(scale);
+      for (let r of rows) {
+        let scaled = "";
+        for (let c of r) {
+          scaled += (c === '1' ? glyph : ' ').repeat(scale);
         }
         for (let s = 0; s < scale; s++) {
-          out.push(scaledRow);
+          out.push(scaled);
         }
       }
       return out;
     }
 
-    function renderShadow(text) {
+    function renderRawShadow(text) {
       const rows = ["", "", "", "", "", ""];
-      const upper = (text || "A").toUpperCase();
-      for (let i = 0; i < upper.length; i++) {
-        const ch = upper[i];
-        const glyph = SHADOW_FONT[ch];
-        if (glyph) {
-          for (let r = 0; r < 6; r++) {
-            rows[r] += glyph[r];
+      const upper = (text || "").toUpperCase();
+      for (let ch of upper) {
+        const g = SHADOW_FONT[ch];
+        if (g) {
+          for (let i = 0; i < 6; i++) {
+            rows[i] += g[i];
           }
         } else {
           const bm = FONT_5X5[ch] || FONT_5X5['?'];
           const up = [];
-          for (let r = 0; r < 5; r++) {
+          for (let r of bm) {
             let rowStr = "";
-            for (let c = 0; c < bm[r].length; c++) {
-              rowStr += (bm[r][c] === '1' ? '██' : '  ');
-            }
+            for (let c of r) rowStr += (c === '1' ? '██' : '  ');
             up.push(rowStr);
             up.push(rowStr);
           }
-          for (let r = 0; r < 6; r++) {
-            rows[r] += up[r + 2] + " ";
+          for (let i = 0; i < 6; i++) {
+            rows[i] += (up[i + 2] || "          ") + " ";
           }
         }
       }
       return rows;
     }
 
-    function addBoxFrame(plainLines) {
-      const inner = Math.max(...plainLines.map(l => l.length), 0) + 2;
-      const top = "┌" + "─".repeat(inner) + "┐";
-      const spaceLine = "│" + " ".repeat(inner) + "│";
-      const out = [top, spaceLine];
-      for (const line of plainLines) {
-        const pad = Math.max(0, inner - 2 - line.length);
-        out.push("│  " + line + " ".repeat(pad) + "│");
+    function getBasePlainLines() {
+      if (state.fontStyle === "shadow") {
+        return renderRawShadow(state.text);
       }
-      out.push(spaceLine);
-      out.push("└" + "─".repeat(inner) + "┘");
+      return renderRaw5x5(state.text, state.fillGlyph, state.glyphScale);
+    }
+
+    function wrapInBox(lines, colorFn) {
+      const inner = Math.max(...lines.map(l => l.length), 0) + 2;
+      const borderCol = 90;
+      const out = [];
+      out.push([
+        { text: "┌" + "─".repeat(inner) + "┐", color: borderCol }
+      ]);
+      out.push([
+        { text: "│" + " ".repeat(inner) + "│", color: borderCol }
+      ]);
+      lines.forEach((ln, rIdx) => {
+        const pad = Math.max(0, inner - 2 - ln.length);
+        const rowTokens = [
+          { text: "│  ", color: borderCol },
+          ...colorFn(ln, rIdx),
+          { text: " ".repeat(pad) + "│", color: borderCol }
+        ];
+        out.push(rowTokens);
+      });
+      out.push([
+        { text: "│" + " ".repeat(inner) + "│", color: borderCol }
+      ]);
+      out.push([
+        { text: "└" + "─".repeat(inner) + "┘", color: borderCol }
+      ]);
       return out;
     }
 
-    function getCurrentPlainLines() {
-      let lines = (state.font === "shadow") ? renderShadow(state.text) : render5x5(state.text, state.fillChar, state.scale);
-      if (state.framed) {
-        lines = addBoxFrame(lines);
+    function getStaticColoredFrame() {
+      const plain = getBasePlainLines();
+      const codes = state.colorMode === "solid" ? [state.solidColor] : (GRADIENTS[state.gradientName] || GRADIENTS.rainbow);
+
+      const colorRowFn = (line, rIdx) => {
+        if (state.colorMode === "solid") {
+          return [{ text: line, color: state.solidColor }];
+        }
+        if (state.colorMode === "perrow") {
+          const c = codes[rIdx % codes.length];
+          return [{ text: line, color: c }];
+        }
+        const tokens = [];
+        const n = line.length || 1;
+        for (let i = 0; i < line.length; i++) {
+          let idx = Math.floor((i * codes.length) / n);
+          if (idx >= codes.length) idx = codes.length - 1;
+          tokens.push({ text: line[i], color: codes[idx] });
+        }
+        return tokens;
+      };
+
+      if (state.boxFrame) {
+        return wrapInBox(plain, colorRowFn);
       }
-      return lines;
+
+      return plain.map((ln, rIdx) => colorRowFn(ln, rIdx));
     }
 
-    function getColorCodes() {
-      if (state.colorMode === "solid") {
-        return [ANSI_16_MAP[state.solidColor].code];
-      }
-      return GRADIENTS[state.gradient].codes;
+    function renderTokensToHTML(frameTokens) {
+      return frameTokens.map(row => {
+        return row.map(t => {
+          const colClass = `c-${t.color || 37}`;
+          const safeText = t.text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return `<span class="${colClass}">${safeText}</span>`;
+        }).join('');
+      }).join('\n');
     }
 
-    function linesToHtml(lines, colorMode, codes) {
-      const htmlRows = [];
-      const isFramed = state.framed;
-      for (let r = 0; r < lines.length; r++) {
-        const line = lines[r];
-        if (isFramed && (r === 0 || r === 1 || r === lines.length - 1 || r === lines.length - 2)) {
-          htmlRows.push(`<span style="color: #64748b">${escapeHtml(line)}</span>`);
-          continue;
-        }
+    function drawFrameToCanvas(canvas, frameTokens) {
+      const ctx = canvas.getContext('2d');
+      const fontSize = state.fontSize;
+      const lineHeight = fontSize * state.lineHeight;
+      const padding = state.padding;
+      
+      ctx.font = `${fontSize}px "Fira Code", monospace`;
+      const charWidth = ctx.measureText("M").width;
 
-        if (colorMode === "solid") {
-          const hex = ANSI_CODE_TO_HEX[codes[0]];
-          if (isFramed) {
-            const leftBorder = `<span style="color: #64748b">│  </span>`;
-            const rightBorder = `<span style="color: #64748b">│</span>`;
-            const content = line.substring(3, line.length - 1);
-            htmlRows.push(`${leftBorder}<span style="color: ${hex}">${escapeHtml(content)}</span>${rightBorder}`);
-          } else {
-            htmlRows.push(`<span style="color: ${hex}">${escapeHtml(line)}</span>`);
-          }
-        } else if (colorMode === "perrow") {
-          const hex = ANSI_CODE_TO_HEX[codes[r % codes.length]];
-          if (isFramed) {
-            const leftBorder = `<span style="color: #64748b">│  </span>`;
-            const rightBorder = `<span style="color: #64748b">│</span>`;
-            const content = line.substring(3, line.length - 1);
-            htmlRows.push(`${leftBorder}<span style="color: ${hex}">${escapeHtml(content)}</span>${rightBorder}`);
-          } else {
-            htmlRows.push(`<span style="color: ${hex}">${escapeHtml(line)}</span>`);
-          }
-        } else {
-          if (isFramed) {
-            const leftBorder = `<span style="color: #64748b">│  </span>`;
-            const rightBorder = `<span style="color: #64748b">│</span>`;
-            const content = line.substring(3, line.length - 1);
-            const charsHtml = [];
-            for (let c = 0; c < content.length; c++) {
-              let idx = Math.floor((c * codes.length) / (content.length || 1));
-              if (idx >= codes.length) idx = codes.length - 1;
-              const hex = ANSI_CODE_TO_HEX[codes[idx]];
-              charsHtml.push(`<span style="color: ${hex}">${escapeHtml(content[c])}</span>`);
-            }
-            htmlRows.push(`${leftBorder}${charsHtml.join("")}${rightBorder}`);
-          } else {
-            const charsHtml = [];
-            for (let c = 0; c < line.length; c++) {
-              let idx = Math.floor((c * codes.length) / (line.length || 1));
-              if (idx >= codes.length) idx = codes.length - 1;
-              const hex = ANSI_CODE_TO_HEX[codes[idx]];
-              charsHtml.push(`<span style="color: ${hex}">${escapeHtml(line[c])}</span>`);
-            }
-            htmlRows.push(charsHtml.join(""));
-          }
-        }
+      let maxCols = 0;
+      frameTokens.forEach(row => {
+        let cols = 0;
+        row.forEach(t => cols += t.text.length);
+        if (cols > maxCols) maxCols = cols;
+      });
+
+      const width = Math.ceil(padding * 2 + maxCols * (charWidth + state.letterSpacing));
+      const height = Math.ceil(padding * 2 + frameTokens.length * lineHeight);
+
+      canvas.width = Math.max(width, 320);
+      canvas.height = Math.max(height, 160);
+
+      ctx.fillStyle = state.theme === "light" ? "#1e1e24" : "#0b0c10";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (state.glow > 0) {
+        ctx.shadowColor = ANSI_COLORS[state.solidColor]?.hex || "#a88bff";
+        ctx.shadowBlur = state.glow;
+      } else {
+        ctx.shadowBlur = 0;
       }
-      return htmlRows.join("\n");
-    }
 
-    function linesToAnsi(lines, colorMode, codes) {
-      const out = [];
-      const isFramed = state.framed;
-      for (let r = 0; r < lines.length; r++) {
-        const line = lines[r];
-        if (isFramed && (r === 0 || r === 1 || r === lines.length - 1 || r === lines.length - 2)) {
-          out.push(`\x1b[90m${line}\x1b[0m`);
-          continue;
-        }
+      ctx.textBaseline = "top";
+      ctx.font = `${fontSize}px "Fira Code", monospace`;
 
-        if (colorMode === "solid") {
-          const code = codes[0];
-          if (isFramed) {
-            const content = line.substring(3, line.length - 1);
-            out.push(`\x1b[90m│  \x1b[${code}m${content}\x1b[90m│\x1b[0m`);
-          } else {
-            out.push(`\x1b[${code}m${line}\x1b[0m`);
+      frameTokens.forEach((row, rIdx) => {
+        let x = padding;
+        const y = padding + rIdx * lineHeight;
+        row.forEach(t => {
+          ctx.fillStyle = ANSI_COLORS[t.color]?.hex || "#ffffff";
+          for (let i = 0; i < t.text.length; i++) {
+            const ch = t.text[i];
+            ctx.fillText(ch, x, y);
+            x += charWidth + state.letterSpacing;
           }
-        } else if (colorMode === "perrow") {
-          const code = codes[r % codes.length];
-          if (isFramed) {
-            const content = line.substring(3, line.length - 1);
-            out.push(`\x1b[90m│  \x1b[${code}m${content}\x1b[90m│\x1b[0m`);
-          } else {
-            out.push(`\x1b[${code}m${line}\x1b[0m`);
-          }
-        } else {
-          if (isFramed) {
-            const content = line.substring(3, line.length - 1);
-            const buf = ["\x1b[90m│  "];
-            for (let c = 0; c < content.length; c++) {
-              let idx = Math.floor((c * codes.length) / (content.length || 1));
-              if (idx >= codes.length) idx = codes.length - 1;
-              buf.push(`\x1b[${codes[idx]}m${content[c]}`);
-            }
-            buf.push("\x1b[90m│\x1b[0m");
-            out.push(buf.join(""));
-          } else {
-            const buf = [];
-            for (let c = 0; c < line.length; c++) {
-              let idx = Math.floor((c * codes.length) / (line.length || 1));
-              if (idx >= codes.length) idx = codes.length - 1;
-              buf.push(`\x1b[${codes[idx]}m${line[c]}`);
-            }
-            buf.push("\x1b[0m");
-            out.push(buf.join(""));
-          }
+        });
+      });
+
+      if (state.scanlines > 0) {
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = `rgba(0, 0, 0, ${state.scanlines / 100})`;
+        for (let sy = 0; sy < canvas.height; sy += 4) {
+          ctx.fillRect(0, sy, canvas.width, 2);
         }
       }
-      return out.join("\n");
     }
 
-    function escapeHtml(str) {
-      return (str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    function stopAnimation() {
+      if (animTimer) {
+        clearTimeout(animTimer);
+        animTimer = null;
+      }
     }
 
-    let animTimer = null;
-    let animIteration = 0;
-
-    function startAnimationLoop() {
-      if (animTimer) clearTimeout(animTimer);
-      if (state.animType === "none" || !state.isPlaying) {
-        renderStaticTerminal();
+    function startAnimationEngine() {
+      stopAnimation();
+      animFrame = 0;
+      if (state.animType === "none") {
+        const frame = getStaticColoredFrame();
+        document.getElementById('term-display').innerHTML = renderTokensToHTML(frame);
+        document.getElementById('display-mode-label').textContent = "STATIC";
         return;
       }
 
-      state.animStep = 0;
-      state.animPhase = 0;
-      animIteration = 0;
-      state.sparkleRevealed = new Set();
-
-      function step() {
-        if (!state.isPlaying) return;
-        renderAnimationFrame();
-        const delay = getAnimationDelay();
-        animTimer = setTimeout(step, Math.max(16, delay / state.speed));
-      }
-      step();
+      document.getElementById('display-mode-label').textContent = state.animType.toUpperCase();
+      runNextAnimTick();
     }
 
-    function getAnimationDelay() {
-      switch (state.animType) {
-        case "typewriter": return 12;
-        case "pulse": return 260;
-        case "rainbow_sweep": return 55;
-        case "fade_in": return 280;
-        case "slide_left": return 40;
-        case "blink": return 320;
-        case "row_by_row": return 140;
-        case "wave": return 90;
-        case "sparkle": return 35;
-        case "gradient_cycle": return 50;
-        case "logo_animated": return 25;
-        default: return 100;
-      }
-    }
+    function runNextAnimTick() {
+      if (!state.isPlaying) return;
 
-    function renderStaticTerminal() {
-      const lines = getCurrentPlainLines();
-      const codes = getColorCodes();
-      const html = linesToHtml(lines, state.colorMode, codes);
-      document.getElementById("terminalOutput").innerHTML = html;
-    }
+      const plain = (state.animType === "logo_animated") ? renderRawShadow(state.text) : getBasePlainLines();
+      const codes = (state.colorMode === "solid") ? [state.solidColor] : (GRADIENTS[state.gradientName] || GRADIENTS.rainbow);
+      const speedMult = Math.max(0.1, state.animSpeed);
 
-    function renderAnimationFrame() {
-      const terminalEl = document.getElementById("terminalOutput");
-      const plainLines = getCurrentPlainLines();
-      const codes = getColorCodes();
-      const numLines = plainLines.length;
-      const maxWidth = Math.max(...plainLines.map(l => l.length), 0);
+      let delay = 100;
+      let frameTokens = [];
 
       switch (state.animType) {
         case "typewriter": {
-          let totalChars = 0;
-          plainLines.forEach(l => totalChars += l.length);
-          state.animStep++;
-          if (state.animStep > totalChars + 20) {
-            state.animStep = 0;
-          }
-          let charsLeft = state.animStep;
-          const displayLines = [];
-          for (let r = 0; r < numLines; r++) {
-            const line = plainLines[r];
-            if (charsLeft <= 0) {
-              displayLines.push("");
-            } else if (charsLeft >= line.length) {
-              displayLines.push(line);
-              charsLeft -= line.length;
-            } else {
-              displayLines.push(line.substring(0, charsLeft));
-              charsLeft = 0;
+          delay = Math.max(10, 40 / speedMult);
+          const totalChars = plain.reduce((acc, l) => acc + l.length, 0);
+          let cur = 0;
+          frameTokens = plain.map((line, rIdx) => {
+            const rowTokens = [];
+            for (let c = 0; c < line.length; c++) {
+              if (cur <= animFrame) {
+                rowTokens.push({ text: line[c], color: codes[rIdx % codes.length] });
+              } else {
+                rowTokens.push({ text: " ", color: 30 });
+              }
+              cur++;
             }
+            return rowTokens;
+          });
+          animFrame++;
+          if (animFrame > totalChars + 15) {
+            animFrame = 0;
+            if (!state.loop) return;
           }
-          terminalEl.innerHTML = linesToHtml(displayLines, state.colorMode, codes);
           break;
         }
 
         case "pulse": {
-          state.animPhase++;
-          const curCode = codes[state.animPhase % codes.length];
-          const hex = ANSI_CODE_TO_HEX[curCode];
-          const html = plainLines.map(l => `<span style="color: ${hex}">${escapeHtml(l)}</span>`).join("\n");
-          terminalEl.innerHTML = html;
+          delay = Math.max(30, 200 / speedMult);
+          const col = codes[animFrame % codes.length];
+          frameTokens = plain.map(ln => [{ text: ln, color: col }]);
+          animFrame++;
           break;
         }
 
         case "rainbow_sweep": {
-          state.animPhase++;
-          const htmlRows = [];
-          for (let r = 0; r < numLines; r++) {
-            const line = plainLines[r];
-            const chars = [];
-            for (let c = 0; c < line.length; c++) {
-              const codeIdx = (c + state.animPhase) % codes.length;
-              const hex = ANSI_CODE_TO_HEX[codes[codeIdx]];
-              chars.push(`<span style="color: ${hex}">${escapeHtml(line[c])}</span>`);
+          delay = Math.max(20, 60 / speedMult);
+          frameTokens = plain.map(line => {
+            const row = [];
+            for (let i = 0; i < line.length; i++) {
+              const idx = (i + animFrame) % codes.length;
+              row.push({ text: line[i], color: codes[idx] });
             }
-            htmlRows.push(chars.join(""));
-          }
-          terminalEl.innerHTML = htmlRows.join("\n");
+            return row;
+          });
+          animFrame++;
           break;
         }
 
         case "fade_in": {
-          state.animPhase = (state.animPhase + 1) % 5;
-          const shades = [90, 37, 97, codes[0], codes[0]];
-          const activeCode = shades[state.animPhase];
-          const hex = ANSI_CODE_TO_HEX[activeCode] || "#ffffff";
-          terminalEl.innerHTML = plainLines.map(l => `<span style="color: ${hex}">${escapeHtml(l)}</span>`).join("\n");
+          delay = Math.max(40, 250 / speedMult);
+          const shades = [90, 37, 97, codes[0]];
+          const sCol = shades[Math.min(animFrame, shades.length - 1)];
+          frameTokens = plain.map(ln => [{ text: ln, color: sCol }]);
+          animFrame++;
+          if (animFrame >= shades.length + 8) {
+            animFrame = 0;
+            if (!state.loop) return;
+          }
           break;
         }
 
         case "slide_left": {
-          if (state.animStep === undefined) state.animStep = maxWidth;
-          state.animStep -= 3;
-          if (state.animStep < 0) {
-            animIteration++;
-            if (animIteration > 15) {
-              state.animStep = maxWidth;
-              animIteration = 0;
-            } else {
-              state.animStep = 0;
-            }
+          delay = Math.max(15, 45 / speedMult);
+          const maxW = Math.max(...plain.map(l => l.length), 0);
+          const offset = Math.max(0, maxW - animFrame * 2);
+          frameTokens = plain.map(ln => [
+            { text: " ".repeat(offset) + ln, color: codes[0] }
+          ]);
+          if (offset <= 0) {
+            animFrame = 0;
+            if (!state.loop) return;
+          } else {
+            animFrame++;
           }
-          const pad = Math.max(0, state.animStep);
-          const hex = ANSI_CODE_TO_HEX[codes[0]];
-          const html = plainLines.map(l => `<span style="color: ${hex}">${escapeHtml(" ".repeat(pad) + l)}</span>`).join("\n");
-          terminalEl.innerHTML = html;
           break;
         }
 
         case "blink": {
-          state.animPhase = (state.animPhase + 1) % 2;
-          const hex = (state.animPhase === 0) ? ANSI_CODE_TO_HEX[codes[0]] : "#1e1e1e";
-          terminalEl.innerHTML = plainLines.map(l => `<span style="color: ${hex}">${escapeHtml(l)}</span>`).join("\n");
+          delay = Math.max(40, 300 / speedMult);
+          const isOff = animFrame % 2 === 1;
+          const col = isOff ? 30 : codes[0];
+          frameTokens = plain.map(ln => [{ text: ln, color: col }]);
+          animFrame++;
           break;
         }
 
         case "row_by_row": {
-          state.animStep = (state.animStep + 1) % (numLines + 8);
-          const visibleRows = Math.min(numLines, state.animStep);
-          const displayLines = [];
-          for (let r = 0; r < numLines; r++) {
-            if (r < visibleRows) displayLines.push(plainLines[r]);
-            else displayLines.push("");
+          delay = Math.max(25, 120 / speedMult);
+          frameTokens = plain.map((ln, idx) => {
+            if (idx <= animFrame) {
+              return [{ text: ln, color: codes[idx % codes.length] }];
+            }
+            return [{ text: " ", color: 30 }];
+          });
+          animFrame++;
+          if (animFrame > plain.length + 6) {
+            animFrame = 0;
+            if (!state.loop) return;
           }
-          terminalEl.innerHTML = linesToHtml(displayLines, state.colorMode, codes);
           break;
         }
 
         case "wave": {
-          state.animPhase++;
-          const htmlRows = [];
-          for (let r = 0; r < numLines; r++) {
-            const code = codes[(r + state.animPhase) % codes.length];
-            const hex = ANSI_CODE_TO_HEX[code];
-            htmlRows.push(`<span style="color: ${hex}">${escapeHtml(plainLines[r])}</span>`);
-          }
-          terminalEl.innerHTML = htmlRows.join("\n");
+          delay = Math.max(20, 90 / speedMult);
+          frameTokens = plain.map((ln, idx) => {
+            const col = codes[(idx + animFrame) % codes.length];
+            return [{ text: ln, color: col }];
+          });
+          animFrame++;
           break;
         }
 
         case "sparkle": {
-          const targets = [];
-          for (let r = 0; r < numLines; r++) {
-            for (let c = 0; c < plainLines[r].length; c++) {
-              if (plainLines[r][c] !== ' ') {
-                targets.push(`${r},${c}`);
-              }
+          delay = Math.max(15, 50 / speedMult);
+          const totalPoints = [];
+          plain.forEach((line, r) => {
+            for (let c = 0; c < line.length; c++) {
+              if (line[c] !== ' ') totalPoints.push({ r, c });
             }
-          }
-          if (state.sparkleRevealed.size >= targets.length) {
-            animIteration++;
-            if (animIteration > 20) {
-              state.sparkleRevealed.clear();
-              animIteration = 0;
-            }
-          } else {
-            const batch = Math.max(2, Math.floor(targets.length / 15));
-            for (let b = 0; b < batch; b++) {
-              const unrevealed = targets.filter(t => !state.sparkleRevealed.has(t));
-              if (unrevealed.length > 0) {
-                const pick = unrevealed[Math.floor(Math.random() * unrevealed.length)];
-                state.sparkleRevealed.add(pick);
-              }
-            }
-          }
-
-          const hex = ANSI_CODE_TO_HEX[codes[0]];
-          const htmlRows = [];
-          for (let r = 0; r < numLines; r++) {
-            const chars = [];
-            for (let c = 0; c < plainLines[r].length; c++) {
-              if (plainLines[r][c] === ' ' || state.sparkleRevealed.has(`${r},${c}`)) {
-                chars.push(escapeHtml(plainLines[r][c]));
+          });
+          const revealedCount = Math.min(totalPoints.length, Math.floor(animFrame * 3 * speedMult));
+          frameTokens = plain.map((line, rIdx) => {
+            const row = [];
+            for (let c = 0; c < line.length; c++) {
+              if (line[c] === ' ' || ((rIdx * 13 + c * 7 + animFrame * 5) % 10 < 7)) {
+                row.push({ text: line[c], color: codes[0] });
               } else {
-                chars.push(" ");
+                row.push({ text: " ", color: 30 });
               }
             }
-            htmlRows.push(`<span style="color: ${hex}">${chars.join("")}</span>`);
+            return row;
+          });
+          animFrame++;
+          if (animFrame > 35) {
+            animFrame = 0;
+            if (!state.loop) return;
           }
-          terminalEl.innerHTML = htmlRows.join("\n");
           break;
         }
 
         case "gradient_cycle": {
-          state.animPhase++;
-          const htmlRows = [];
-          for (let r = 0; r < numLines; r++) {
-            const line = plainLines[r];
-            const chars = [];
-            for (let c = 0; c < line.length; c++) {
-              const idx = (c + state.animPhase) % codes.length;
-              const hex = ANSI_CODE_TO_HEX[codes[idx]];
-              chars.push(`<span style="color: ${hex}">${escapeHtml(line[c])}</span>`);
+          delay = Math.max(20, 60 / speedMult);
+          frameTokens = plain.map(line => {
+            const row = [];
+            for (let i = 0; i < line.length; i++) {
+              const idx = (i + animFrame) % codes.length;
+              row.push({ text: line[i], color: codes[idx] });
             }
-            htmlRows.push(chars.join(""));
-          }
-          terminalEl.innerHTML = htmlRows.join("\n");
+            return row;
+          });
+          animFrame++;
           break;
         }
 
         case "logo_animated": {
-          const inner = maxWidth + 2;
-          state.animStep++;
-          let totalChars = 0;
-          plainLines.forEach(l => totalChars += l.length);
-          if (state.animStep > totalChars + 25) {
-            state.animStep = 0;
+          delay = Math.max(15, 60 / speedMult);
+          const rowColorizer = (line, rIdx) => {
+            const c = codes[rIdx % codes.length];
+            const maxC = Math.min(line.length, animFrame * 3);
+            return [
+              { text: line.substring(0, maxC), color: c },
+              { text: " ".repeat(Math.max(0, line.length - maxC)), color: 30 }
+            ];
+          };
+          frameTokens = wrapInBox(plain, rowColorizer);
+          animFrame++;
+          const maxLineLen = Math.max(...plain.map(l => l.length), 0);
+          if (animFrame * 3 > maxLineLen + 15) {
+            animFrame = 0;
+            if (!state.loop) return;
           }
-
-          let charsLeft = state.animStep;
-          const htmlRows = [];
-          htmlRows.push(`<span style="color: #64748b">  ┌${"─".repeat(inner)}┐</span>`);
-          htmlRows.push(`<span style="color: #64748b">  │${" ".repeat(inner)}│</span>`);
-
-          for (let r = 0; r < numLines; r++) {
-            const line = plainLines[r];
-            const col = ANSI_CODE_TO_HEX[codes[r % codes.length]];
-            let slice = "";
-            if (charsLeft <= 0) {
-              slice = "";
-            } else if (charsLeft >= line.length) {
-              slice = line;
-              charsLeft -= line.length;
-            } else {
-              slice = line.substring(0, charsLeft);
-              charsLeft = 0;
-            }
-            const pad = Math.max(0, inner - 2 - slice.length);
-            htmlRows.push(`<span style="color: #64748b">  │  </span><span style="color: ${col}">${escapeHtml(slice)}</span><span style="color: #64748b">${" ".repeat(pad)}│</span>`);
-          }
-
-          htmlRows.push(`<span style="color: #64748b">  │${" ".repeat(inner)}│</span>`);
-          htmlRows.push(`<span style="color: #64748b">  └${"─".repeat(inner)}┘</span>`);
-          terminalEl.innerHTML = htmlRows.join("\n");
           break;
         }
-
-        default:
-          renderStaticTerminal();
-          break;
-      }
-    }
-
-    function buildVirtualProject() {
-      const text = state.text || "OPENTEXT";
-      const files = {};
-
-      const staticSpecs = [
-        ["solid.txt", "#", 1, "solid", "bright_green"],
-        ["hash.txt", "#", 1, "solid", "bright_cyan"],
-        ["at.txt", "@", 1, "solid", "bright_yellow"],
-        ["shade.txt", "▓", 1, "gradient", "fire"],
-        ["star.txt", "*", 1, "gradient", "rainbow"],
-        ["solid_big.txt", "█", 2, "gradient", "ocean"]
-      ];
-
-      for (const [fname, fillChar, scale, mode, name] of staticSpecs) {
-        const plain = render5x5(text, fillChar, scale);
-        const codes = (mode === "solid") ? [ANSI_16_MAP[name].code] : GRADIENTS[name].codes;
-        files[`text/${fname}`] = linesToAnsi(plain, mode, codes);
       }
 
-      const shPlain = renderShadow(text);
-      files["text/shadow.txt"] = linesToAnsi(shPlain, "gradient", GRADIENTS["ocean"].codes);
-      files["text/shadow_rainbow.txt"] = linesToAnsi(shPlain, "perrow", GRADIENTS["rainbow"].codes);
-      files["text/shadow_box.txt"] = linesToAnsi(addBoxFrame(shPlain), "gradient", GRADIENTS["rainbow"].codes);
-
-      const animSpecs = [
-        ["typewriter.py", "typewriter", "solid", "bright_green", 1],
-        ["pulse.py", "pulse", "gradient", "rainbow", 1],
-        ["rainbow_sweep.py", "rainbow_sweep", "gradient", "rainbow", 1],
-        ["fade_in.py", "fade_in", "solid", "bright_cyan", 1],
-        ["slide_left.py", "slide_left", "solid", "bright_yellow", 1],
-        ["blink.py", "blink", "gradient", "fire", 1],
-        ["row_by_row.py", "row_by_row", "solid", "bright_red", 1],
-        ["wave.py", "wave", "gradient", "ocean", 1],
-        ["sparkle.py", "sparkle", "solid", "bright_magenta", 1],
-        ["gradient_cycle.py", "gradient_cycle", "gradient", "rainbow", 1]
-      ];
-
-      for (const [fname, anim, mode, name, scale] of animSpecs) {
-        const plain = render5x5(text, "█", scale);
-        const colors = (mode === "solid") ? [ANSI_16_MAP[name].code] : GRADIENTS[name].codes;
-        const desc = (mode === "solid") ? `solid ${name}` : `gradient ${name}`;
-        files[`anim/${fname}`] = generatePythonScript(fname, anim, plain, desc, colors);
-      }
-
-      files["anim/logo_animated.py"] = generatePythonScript(
-        "logo_animated.py",
-        "logo_animated",
-        shPlain,
-        "per-row gradient rainbow (shadow font)",
-        GRADIENTS["rainbow"].codes
-      );
-
-      files["README.md"] = generateReadme();
-
-      state.virtualFiles = files;
-      updateExplorerUI();
-      updateSnippetsUI();
-    }
-
-    function generatePythonScript(filename, animType, plainLines, colorDesc, colors) {
-      const moduleName = filename.replace(/\.py$/, "");
-      const linesArrStr = plainLines.map(l => `    ${JSON.stringify(l)},`).join("\n");
-      const colorsArrStr = JSON.stringify(colors);
-      const body = ANIM_PYTHON_TEMPLATES[animType] || "";
-
-      return `#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-OpenText Studio - Generated Animation
-======================================
-Animation : ${animType}
-Color     : ${colorDesc}
-File      : ${filename}
-
-RUN STANDALONE:
-    python ${filename}
-
-EMBED INTO YOUR OWN SCRIPT:
-    import ${moduleName}
-    ${moduleName}.animate()
-"""
-
-__all__ = ["ART", "COLORS", "animate"]
-
-import sys
-import time
-
-try:
-    sys.stdout.reconfigure(encoding="utf-8")
-except Exception:
-    pass
-
-if sys.platform == "win32":
-    try:
-        import ctypes
-        _k = ctypes.windll.kernel32
-        _k.SetConsoleMode(_k.GetStdHandle(-11), 7)
-    except Exception:
-        pass
-
-ART = [
-${linesArrStr}
-]
-
-COLORS = ${colorsArrStr}
-
-${body}
-
-def animate(**kwargs):
-    """Public entry point - call from your own code."""
-    return _run(**kwargs)
-
-if __name__ == "__main__":
-    try:
-        animate()
-    except KeyboardInterrupt:
-        sys.stdout.write("\\n")
-`;
-    }
-
-    function generateReadme() {
-      return `# OpenText Studio Project ${state.projectId}
-
-Generated with OpenText Studio Web Port.
-
-## Folder Structure
-- \`text/\`: Static colored ANSI text files.
-- \`anim/\`: Standalone and embeddable Python scripts with VT terminal animations.
-
-## Quick Run
-\`\`\`bash
-# View static art in terminal
-cat text/shadow.txt
-
-# Run Python animation
-python anim/rainbow_sweep.py
-python anim/logo_animated.py
-\`\`\`
-
-## Python Embed Example
-\`\`\`python
-import anim.logo_animated as banner
-banner.animate()
-\`\`\`
-`;
-    }
-
-    function updateExplorerUI() {
-      const container = document.getElementById("fileTreeContainer");
-      container.innerHTML = "";
-
-      const keys = Object.keys(state.virtualFiles).sort();
-      const groups = { "text": [], "anim": [], "root": [] };
-
-      for (const k of keys) {
-        if (k.startsWith("text/")) groups.text.push(k);
-        else if (k.startsWith("anim/")) groups.anim.push(k);
-        else groups.root.push(k);
-      }
-
-      function createFolderNode(name, items, icon) {
-        const wrap = document.createElement("div");
-        wrap.className = "flex flex-col gap-1 mb-2";
-        const header = document.createElement("div");
-        header.className = "flex items-center gap-1.5 text-m3-outline text-xs px-2 py-1 font-semibold";
-        header.innerHTML = `<span class="material-symbols-outlined text-sm">${icon}</span><span>${state.projectId}/${name}</span>`;
-        wrap.appendChild(header);
-
-        for (const item of items) {
-          const btn = document.createElement("button");
-          const isSelected = item === state.selectedFileKey;
-          btn.type = "button";
-          btn.className = `flex items-center gap-2 px-3 py-1.5 rounded-xl text-left transition-all ${
-            isSelected 
-              ? "bg-m3-primary text-m3-onPrimary font-bold shadow-sm" 
-              : "hover:bg-m3-surfaceContainerHighest text-m3-onSurface"
-          }`;
-          btn.innerHTML = `<span class="material-symbols-outlined text-xs">${item.endsWith('.py') ? 'terminal' : 'description'}</span><span>${item.split('/').pop()}</span>`;
-          btn.addEventListener("click", () => {
-            state.selectedFileKey = item;
-            updateExplorerUI();
-            displaySelectedFile();
-          });
-          wrap.appendChild(btn);
-        }
-        return wrap;
-      }
-
-      container.appendChild(createFolderNode("text/", groups.text, "folder"));
-      container.appendChild(createFolderNode("anim/", groups.anim, "terminal"));
-      if (groups.root.length > 0) {
-        container.appendChild(createFolderNode("", groups.root, "description"));
-      }
-
-      displaySelectedFile();
-    }
-
-    function displaySelectedFile() {
-      const content = state.virtualFiles[state.selectedFileKey] || "";
-      const fn = state.selectedFileKey.split('/').pop();
-      document.getElementById("currentFileName").textContent = fn;
-      document.getElementById("fileViewerPath").textContent = `${state.projectId}/${state.selectedFileKey}`;
-      document.getElementById("currentFileSize").textContent = `${content.length} chars`;
-      document.getElementById("explorerProjectPath").textContent = `${state.projectId}/`;
-      document.getElementById("fileViewerCode").textContent = content;
-      document.getElementById("currentFileIcon").textContent = fn.endsWith('.py') ? 'terminal' : 'description';
-    }
-
-    function updateSnippetsUI() {
-      const plain = getCurrentPlainLines();
-      const codes = getColorCodes();
-      const htmlCode = linesToHtml(plain, state.colorMode, codes);
-      const ansiCode = linesToAnsi(plain, state.colorMode, codes);
-
-      document.getElementById("pythonSnippetBox").textContent = `import time, sys
-
-ART = ${JSON.stringify(plain, null, 2)}
-COLORS = ${JSON.stringify(codes)}
-
-def show_banner():
-    for i, line in enumerate(ART):
-        code = COLORS[i % len(COLORS)]
-        sys.stdout.write(f"\\033[{code}m{line}\\033[0m\\n")
-    sys.stdout.flush()
-
-if __name__ == "__main__":
-    show_banner()`;
-
-      document.getElementById("htmlSnippetBox").textContent = `<pre style="background:#090b10; color:#fff; font-family:monospace; padding:16px; border-radius:12px; line-height:1.2;">
-${htmlCode}
-</pre>`;
-
-      document.getElementById("bashSnippetBox").textContent = `#!/usr/bin/env bash
-cat << 'EOF'
-${ansiCode}
-EOF`;
-
-      document.getElementById("zipNameLabel").textContent = `opentext_studio_${state.projectId}.zip`;
-    }
-
-    function copyToClipboard(text, successMsg) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast(successMsg);
-        }).catch(() => {
-          legacyCopy(text, successMsg);
+      if (state.boxFrame && state.animType !== "logo_animated") {
+        const inner = Math.max(...plain.map(l => l.length), 0) + 2;
+        const bordered = [];
+        bordered.push([{ text: "┌" + "─".repeat(inner) + "┐", color: 90 }]);
+        bordered.push([{ text: "│" + " ".repeat(inner) + "│", color: 90 }]);
+        frameTokens.forEach(row => {
+          let rowLen = 0;
+          row.forEach(t => rowLen += t.text.length);
+          const pad = Math.max(0, inner - 2 - rowLen);
+          bordered.push([
+            { text: "│  ", color: 90 },
+            ...row,
+            { text: " ".repeat(pad) + "│", color: 90 }
+          ]);
         });
-      } else {
-        legacyCopy(text, successMsg);
+        bordered.push([{ text: "│" + " ".repeat(inner) + "│", color: 90 }]);
+        bordered.push([{ text: "└" + "─".repeat(inner) + "┘", color: 90 }]);
+        frameTokens = bordered;
+      }
+
+      document.getElementById('term-display').innerHTML = renderTokensToHTML(frameTokens);
+
+      if (state.isPlaying) {
+        animTimer = setTimeout(runNextAnimTick, delay);
       }
     }
 
-    function legacyCopy(text, successMsg) {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.top = "-9999px";
-      ta.style.left = "-9999px";
-      document.body.appendChild(ta);
-      ta.focus();
-      ta.select();
+    function updatePreview() {
+      applyCSSVariables();
+      startAnimationEngine();
+    }
+
+    function applyCSSVariables() {
+      const root = document.documentElement;
+      root.style.setProperty('--term-font-size', state.fontSize + 'px');
+      root.style.setProperty('--term-line-height', state.lineHeight);
+      root.style.setProperty('--term-letter-spacing', state.letterSpacing + 'px');
+      root.style.setProperty('--term-padding', state.padding + 'px');
+      root.style.setProperty('--term-scanline-opacity', (state.scanlines / 100).toString());
+      root.style.setProperty('--term-glow-radius', state.glow + 'px');
+      
+      const activeHex = ANSI_COLORS[state.solidColor]?.hex || '#a88bff';
+      root.style.setProperty('--term-glow-color', activeHex + '66');
+
+      const wrapper = document.getElementById('term-wrapper-el');
+      wrapper.style.transform = `scale(${state.zoom / 100})`;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast-msg');
+      document.getElementById('toast-text').textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    async function exportPhotoPNG() {
+      const canvas = document.getElementById('render-canvas');
+      const frame = getStaticColoredFrame();
+      drawFrameToCanvas(canvas, frame);
+
+      canvas.toBlob(blob => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `opentext-${Date.now()}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Photo saved as PNG");
+      }, "image/png");
+    }
+
+    async function exportVideoWebM() {
+      if (isRecordingVideo) return;
+      isRecordingVideo = true;
+
+      const modal = document.getElementById('modal-video-progress');
+      const fill = document.getElementById('video-progress-fill');
+      const percentEl = document.getElementById('video-progress-percent');
+      const timeEl = document.getElementById('video-progress-time');
+      modal.classList.add('active');
+
+      const canvas = document.getElementById('render-canvas');
+      const stream = canvas.captureStream(30);
+      let recorder;
       try {
-        document.execCommand("copy");
-        showToast(successMsg);
-      } catch (err) {
-        showToast("Failed to copy");
+        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+      } catch (e) {
+        recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
       }
-      document.body.removeChild(ta);
+
+      const chunks = [];
+      recorder.ondataavailable = e => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `opentext-anim-${Date.now()}.webm`;
+        a.click();
+        URL.revokeObjectURL(url);
+        modal.classList.remove('active');
+        isRecordingVideo = false;
+        showToast("Video exported as WebM");
+      };
+
+      recorder.start();
+
+      const durationMs = state.recordSec * 1000;
+      const startTime = performance.now();
+
+      const recTimer = setInterval(() => {
+        const elapsed = performance.now() - startTime;
+        const progress = Math.min(1, elapsed / durationMs);
+        fill.style.width = (progress * 100).toFixed(1) + "%";
+        percentEl.textContent = Math.round(progress * 100) + "%";
+        timeEl.textContent = (elapsed / 1000).toFixed(1) + "s / " + state.recordSec + "s";
+
+        const plain = (state.animType === "logo_animated") ? renderRawShadow(state.text) : getBasePlainLines();
+        const codes = (state.colorMode === "solid") ? [state.solidColor] : (GRADIENTS[state.gradientName] || GRADIENTS.rainbow);
+        
+        let frameTokens = plain.map((l, rIdx) => [{ text: l, color: codes[rIdx % codes.length] }]);
+        if (state.boxFrame) {
+          frameTokens = wrapInBox(plain, (l, rIdx) => [{ text: l, color: codes[rIdx % codes.length] }]);
+        }
+        drawFrameToCanvas(canvas, frameTokens);
+
+        if (elapsed >= durationMs) {
+          clearInterval(recTimer);
+          recorder.stop();
+        }
+      }, 33);
     }
 
-    function downloadFile(filename, content, mime) {
-      const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast(`Downloaded ${filename}`);
-    }
-
-    async function downloadProjectZip() {
+    async function exportStudioZip() {
       if (typeof JSZip === "undefined") {
-        showToast("JSZip library is still loading...");
+        showToast("JSZip library loading...");
         return;
       }
-      showToast("Packaging ZIP archive...");
       const zip = new JSZip();
-      const rootFolder = zip.folder(state.projectId);
-      const textFolder = rootFolder.folder("text");
-      const animFolder = rootFolder.folder("anim");
+      const folderId = Math.floor(10000 + Math.random() * 90000).toString();
+      const root = zip.folder(folderId);
+      const textDir = root.folder("text");
+      const animDir = root.folder("anim");
 
-      for (const [path, content] of Object.entries(state.virtualFiles)) {
-        if (path.startsWith("text/")) {
-          textFolder.file(path.replace(/^text\//, ""), content);
-        } else if (path.startsWith("anim/")) {
-          animFolder.file(path.replace(/^anim\//, ""), content);
-        } else {
-          rootFolder.file(path, content);
-        }
-      }
+      const plain5x5 = renderRaw5x5(state.text, "█", 1);
+      const plainShadow = renderRawShadow(state.text);
 
-      const blob = await zip.generateAsync({ type: "blob" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const staticFiles = [
+        ["solid.txt", plain5x5, 92],
+        ["hash.txt", renderRaw5x5(state.text, "#", 1), 96],
+        ["at.txt", renderRaw5x5(state.text, "@", 1), 93],
+        ["shade.txt", renderRaw5x5(state.text, "▓", 1), 91],
+        ["shadow.txt", plainShadow, 94],
+        ["shadow_box.txt", wrapInBox(plainShadow, l => [{ text: l, color: 95 }]).map(r => r.map(t => t.text).join('')), 95]
+      ];
+
+      staticFiles.forEach(([fn, lines, col]) => {
+        const content = lines.map(ln => `\x1b[${col}m${ln}\x1b[0m`).join('\n');
+        textDir.file(fn, content);
+      });
+
+      const animPyScript = `#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import sys, time
+ART = ${JSON.stringify(plain5x5)}
+COLORS = [${state.solidColor}]
+
+def animate():
+    for line in ART:
+        sys.stdout.write(f"\\033[{COLORS[0]}m{line}\\033[0m\\n")
+        time.sleep(0.05)
+
+if __name__ == "__main__":
+    animate()
+`;
+      animDir.file("run_anim.py", animPyScript);
+      root.file("README.md", `# OpenText Studio Project ${folderId}\nGenerated text: ${state.text}\n`);
+
+      const content = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
       a.href = url;
-      a.download = `opentext_studio_${state.projectId}.zip`;
-      document.body.appendChild(a);
+      a.download = `opentext-studio-${folderId}.zip`;
       a.click();
-      document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast(`Saved opentext_studio_${state.projectId}.zip`);
+      showToast(`Project ${folderId}.zip downloaded!`);
     }
 
-    let toastTimer = null;
-    function showToast(msg) {
-      const toast = document.getElementById("toastMessage");
-      const textEl = document.getElementById("toastText");
-      textEl.textContent = msg;
-      toast.classList.remove("translate-y-20", "opacity-0");
-      toast.classList.add("translate-y-0", "opacity-100");
-      if (toastTimer) clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => {
-        toast.classList.remove("translate-y-0", "opacity-100");
-        toast.classList.add("translate-y-20", "opacity-0");
-      }, 2500);
+    function initSwatches() {
+      const cont = document.getElementById('swatch-container');
+      cont.innerHTML = '';
+      Object.keys(ANSI_COLORS).forEach(code => {
+        const c = ANSI_COLORS[code];
+        const el = document.createElement('div');
+        el.className = `color-swatch ${parseInt(code) === state.solidColor ? 'active' : ''}`;
+        el.style.backgroundColor = c.hex;
+        el.title = `${c.name} (${code})`;
+        el.addEventListener('click', () => {
+          document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+          el.classList.add('active');
+          state.solidColor = parseInt(code);
+          updatePreview();
+        });
+        cont.appendChild(el);
+      });
     }
 
-    function initUI() {
-      state.projectId = generateRandomProjectId();
-      document.getElementById("headerProjectId").textContent = state.projectId;
-
-      const solidGrid = document.getElementById("solidColorGrid");
-      solidGrid.innerHTML = "";
-      for (const [key, obj] of Object.entries(ANSI_16_MAP)) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "flex items-center gap-1.5 p-2 rounded-xl border border-m3-outlineVariant/40 text-left transition-all hover:scale-[1.02] bg-m3-surfaceContainerHigh";
-        btn.dataset.colorKey = key;
-        btn.innerHTML = `<span class="w-3.5 h-3.5 rounded-full flex-shrink-0" style="background-color: ${obj.hex}; border: 1px solid rgba(255,255,255,0.2);"></span><span class="text-[10px] font-mono truncate text-m3-onSurface">${obj.label}</span>`;
-        btn.addEventListener("click", () => {
-          state.solidColor = key;
-          highlightSelectedSolidColor();
-          buildVirtualProject();
-          startAnimationLoop();
-        });
-        solidGrid.appendChild(btn);
-      }
-
-      const gradGrid = document.getElementById("gradientSchemeGrid");
-      gradGrid.innerHTML = "";
-      for (const [key, obj] of Object.entries(GRADIENTS)) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "p-2.5 rounded-xl border border-m3-outlineVariant/40 flex flex-col gap-1.5 text-left transition-all hover:scale-[1.02] bg-m3-surfaceContainerHigh";
-        btn.dataset.gradientKey = key;
-        const dots = obj.codes.map(c => `<span class="w-2.5 h-2.5 rounded-full inline-block" style="background-color: ${ANSI_CODE_TO_HEX[c]}"></span>`).join("");
-        btn.innerHTML = `<div class="flex items-center justify-between"><span class="text-xs font-semibold capitalize">${obj.label}</span></div><div class="flex items-center gap-1">${dots}</div>`;
-        btn.addEventListener("click", () => {
-          state.gradient = key;
-          highlightSelectedGradient();
-          buildVirtualProject();
-          startAnimationLoop();
-        });
-        gradGrid.appendChild(btn);
-      }
-
-      highlightSelectedSolidColor();
-      highlightSelectedGradient();
-
-      document.getElementById("textInput").addEventListener("input", (e) => {
-        state.text = e.target.value.trim() || "OPENTEXT";
-        buildVirtualProject();
-        startAnimationLoop();
-      });
-
-      document.getElementById("clearInputBtn").addEventListener("click", () => {
-        const inp = document.getElementById("textInput");
-        inp.value = "";
-        state.text = "OPENTEXT";
-        buildVirtualProject();
-        startAnimationLoop();
-        inp.focus();
-      });
-
-      document.querySelectorAll(".preset-chip").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const val = btn.textContent;
-          document.getElementById("textInput").value = val;
-          state.text = val;
-          buildVirtualProject();
-          startAnimationLoop();
+    function bindUIEvents() {
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          const tabId = btn.getAttribute('data-tab');
+          document.getElementById(tabId).classList.add('active');
         });
       });
 
-      document.getElementById("regenProjectBtn").addEventListener("click", () => {
-        state.projectId = generateRandomProjectId();
-        document.getElementById("headerProjectId").textContent = state.projectId;
-        buildVirtualProject();
-        showToast(`New Project ID: ${state.projectId}`);
+      const txtInput = document.getElementById('input-text');
+      txtInput.addEventListener('input', e => {
+        state.text = e.target.value.toUpperCase();
+        updatePreview();
       });
 
-      const fontBtn5x5 = document.getElementById("fontBtn5x5");
-      const fontBtnShadow = document.getElementById("fontBtnShadow");
-      const glyphBlock = document.getElementById("glyphControlsBlock");
-
-      fontBtn5x5.addEventListener("click", () => {
-        state.font = "5x5";
-        fontBtn5x5.dataset.active = "true";
-        fontBtnShadow.dataset.active = "false";
-        glyphBlock.classList.remove("hidden");
-        buildVirtualProject();
-        startAnimationLoop();
-      });
-
-      fontBtnShadow.addEventListener("click", () => {
-        state.font = "shadow";
-        fontBtn5x5.dataset.active = "false";
-        fontBtnShadow.dataset.active = "true";
-        glyphBlock.classList.add("hidden");
-        buildVirtualProject();
-        startAnimationLoop();
-      });
-
-      document.querySelectorAll(".glyph-chip").forEach(chip => {
-        chip.addEventListener("click", () => {
-          state.fillChar = chip.dataset.char;
-          document.getElementById("customGlyphInput").value = state.fillChar;
-          buildVirtualProject();
-          startAnimationLoop();
+      document.querySelectorAll('#font-style-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#font-style-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          state.fontStyle = ch.getAttribute('data-font');
+          document.getElementById('card-glyph').style.display = state.fontStyle === '5x5' ? 'flex' : 'none';
+          document.getElementById('scale-slider-wrap').style.display = state.fontStyle === '5x5' ? 'flex' : 'none';
+          updatePreview();
         });
       });
 
-      document.getElementById("customGlyphInput").addEventListener("input", (e) => {
-        const val = e.target.value || "█";
-        state.fillChar = val[0];
-        buildVirtualProject();
-        startAnimationLoop();
-      });
-
-      document.querySelectorAll(".scale-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".scale-btn").forEach(b => b.dataset.active = "false");
-          btn.dataset.active = "true";
-          state.scale = parseInt(btn.dataset.scale) || 1;
-          buildVirtualProject();
-          startAnimationLoop();
-        });
-      });
-
-      document.getElementById("frameBoxToggle").addEventListener("change", (e) => {
-        state.framed = e.target.checked;
-        buildVirtualProject();
-        startAnimationLoop();
-      });
-
-      document.querySelectorAll(".color-mode-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".color-mode-btn").forEach(b => b.dataset.active = "false");
-          btn.dataset.active = "true";
-          state.colorMode = btn.dataset.mode;
-          const solidSel = document.getElementById("solidColorSelector");
-          const gradSel = document.getElementById("gradientColorSelector");
-          if (state.colorMode === "solid") {
-            solidSel.classList.remove("hidden");
-            solidSel.classList.add("flex");
-            gradSel.classList.add("hidden");
-            gradSel.classList.remove("flex");
+      document.querySelectorAll('#glyph-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#glyph-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          const g = ch.getAttribute('data-glyph');
+          const custInput = document.getElementById('input-custom-glyph');
+          if (g === 'custom') {
+            custInput.style.display = 'block';
+            state.fillGlyph = custInput.value || '█';
           } else {
-            solidSel.classList.add("hidden");
-            solidSel.classList.remove("flex");
-            gradSel.classList.remove("hidden");
-            gradSel.classList.add("flex");
+            custInput.style.display = 'none';
+            state.fillGlyph = g;
           }
-          buildVirtualProject();
-          startAnimationLoop();
+          updatePreview();
         });
       });
 
-      document.getElementById("animTypeSelect").addEventListener("change", (e) => {
-        state.animType = e.target.value;
-        startAnimationLoop();
+      document.getElementById('input-custom-glyph').addEventListener('input', e => {
+        state.fillGlyph = e.target.value || '█';
+        updatePreview();
       });
 
-      document.getElementById("playPauseBtn").addEventListener("click", () => {
+      document.getElementById('check-box-frame').addEventListener('change', e => {
+        state.boxFrame = e.target.checked;
+        updatePreview();
+      });
+
+      document.querySelectorAll('#color-mode-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#color-mode-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          state.colorMode = ch.getAttribute('data-mode');
+          document.getElementById('palette-solid-wrap').style.display = state.colorMode === 'solid' ? 'block' : 'none';
+          document.getElementById('palette-grad-wrap').style.display = state.colorMode !== 'solid' ? 'block' : 'none';
+          updatePreview();
+        });
+      });
+
+      document.querySelectorAll('#gradient-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#gradient-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          state.gradientName = ch.getAttribute('data-grad');
+          updatePreview();
+        });
+      });
+
+      const bindSlider = (id, valId, prop, unit, cb) => {
+        const s = document.getElementById(id);
+        const v = document.getElementById(valId);
+        s.addEventListener('input', e => {
+          state[prop] = parseFloat(e.target.value);
+          v.textContent = `${e.target.value}${unit}`;
+          if (cb) cb();
+          else updatePreview();
+        });
+      };
+
+      bindSlider('slider-glyph-scale', 'val-glyph-scale', 'glyphScale', 'x');
+      bindSlider('slider-font-size', 'val-font-size', 'fontSize', 'px');
+      bindSlider('slider-line-height', 'val-line-height', 'lineHeight', '');
+      bindSlider('slider-letter-spacing', 'val-letter-spacing', 'letterSpacing', 'px');
+      bindSlider('slider-padding', 'val-padding', 'padding', 'px');
+      bindSlider('slider-anim-speed', 'val-anim-speed', 'animSpeed', 'x');
+      bindSlider('slider-record-sec', 'val-record-sec', 'recordSec', 's');
+      bindSlider('slider-scanlines', 'val-scanlines', 'scanlines', '%');
+      bindSlider('slider-glow', 'val-glow', 'glow', 'px');
+      bindSlider('slider-zoom', 'val-zoom', 'zoom', '%', () => {
+        applyCSSVariables();
+      });
+
+      document.getElementById('btn-autofit-zoom').addEventListener('click', () => {
+        const container = document.getElementById('term-container-el');
+        const screenEl = document.getElementById('term-screen-el');
+        const availableW = container.clientWidth - 40;
+        const screenW = screenEl.scrollWidth || 600;
+        if (availableW > 0 && screenW > 0) {
+          let calcZoom = Math.min(100, Math.max(30, Math.floor((availableW / screenW) * 100)));
+          state.zoom = calcZoom;
+          document.getElementById('slider-zoom').value = calcZoom;
+          document.getElementById('val-zoom').textContent = calcZoom + '%';
+          applyCSSVariables();
+          showToast(`Zoom fitted to ${calcZoom}%`);
+        }
+      });
+
+      document.querySelectorAll('#anim-type-chips .chip').forEach(ch => {
+        ch.addEventListener('click', () => {
+          document.querySelectorAll('#anim-type-chips .chip').forEach(c => c.classList.remove('active'));
+          ch.classList.add('active');
+          state.animType = ch.getAttribute('data-anim');
+          state.isPlaying = true;
+          document.getElementById('icon-play-pause').textContent = 'pause';
+          updatePreview();
+        });
+      });
+
+      document.getElementById('check-anim-loop').addEventListener('change', e => {
+        state.loop = e.target.checked;
+      });
+
+      document.getElementById('btn-replay-anim').addEventListener('click', () => {
+        startAnimationEngine();
+      });
+
+      const playPauseBtn = document.getElementById('btn-play-pause');
+      playPauseBtn.addEventListener('click', () => {
         state.isPlaying = !state.isPlaying;
-        const icon = document.getElementById("playPauseIcon");
-        const text = document.getElementById("playPauseText");
+        document.getElementById('icon-play-pause').textContent = state.isPlaying ? 'pause' : 'play_arrow';
         if (state.isPlaying) {
-          icon.textContent = "pause";
-          text.textContent = "Pause";
-          startAnimationLoop();
+          runNextAnimTick();
         } else {
-          icon.textContent = "play_arrow";
-          text.textContent = "Play";
-          if (animTimer) clearTimeout(animTimer);
+          stopAnimation();
         }
       });
 
-      document.getElementById("restartAnimBtn").addEventListener("click", () => {
+      document.getElementById('btn-restart').addEventListener('click', () => {
         state.isPlaying = true;
-        document.getElementById("playPauseIcon").textContent = "pause";
-        document.getElementById("playPauseText").textContent = "Pause";
-        startAnimationLoop();
+        document.getElementById('icon-play-pause').textContent = 'pause';
+        startAnimationEngine();
       });
 
-      document.querySelectorAll(".speed-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".speed-btn").forEach(b => {
-            b.className = "speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-white/10 text-slate-300 hover:bg-white/20";
-          });
-          btn.className = "speed-btn px-2 py-0.5 rounded text-[11px] font-mono bg-m3-primary text-m3-onPrimary font-bold";
-          state.speed = parseFloat(btn.dataset.speed) || 1.0;
-        });
+      document.getElementById('btn-export-photo').addEventListener('click', exportPhotoPNG);
+      document.getElementById('btn-quick-photo').addEventListener('click', exportPhotoPNG);
+      document.getElementById('btn-export-video').addEventListener('click', exportVideoWebM);
+      document.getElementById('btn-quick-video').addEventListener('click', exportVideoWebM);
+      document.getElementById('btn-export-zip').addEventListener('click', exportStudioZip);
+
+      document.getElementById('btn-copy-plain').addEventListener('click', () => {
+        const plain = getBasePlainLines().join('\n');
+        navigator.clipboard.writeText(plain).then(() => showToast("Plain ASCII copied!"));
       });
 
-      document.getElementById("crtToggleBtn").addEventListener("click", () => {
-        const overlay = document.getElementById("crtOverlay");
-        const out = document.getElementById("terminalOutput");
-        if (overlay.classList.contains("hidden")) {
-          overlay.classList.remove("hidden");
-          out.classList.add("crt-glow");
-        } else {
-          overlay.classList.add("hidden");
-          out.classList.remove("crt-glow");
-        }
+      document.getElementById('btn-copy-ansi').addEventListener('click', () => {
+        const plain = getBasePlainLines();
+        const ansi = plain.map(ln => `\x1b[${state.solidColor}m${ln}\x1b[0m`).join('\n');
+        navigator.clipboard.writeText(ansi).then(() => showToast("ANSI text copied!"));
       });
 
-      document.querySelectorAll(".tab-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(".tab-btn").forEach(b => b.dataset.active = "false");
-          btn.dataset.active = "true";
-          const tab = btn.dataset.tab;
-          state.activeTab = tab;
-          document.getElementById("tabStudio").classList.toggle("hidden", tab !== "studio");
-          document.getElementById("tabExplorer").classList.toggle("hidden", tab !== "explorer");
-          document.getElementById("tabExport").classList.toggle("hidden", tab !== "export");
-        });
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        state.theme = state.theme === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', state.theme);
+        const icon = document.querySelector('#btn-theme-toggle .material-symbols-outlined');
+        icon.textContent = state.theme === 'dark' ? 'dark_mode' : 'light_mode';
+        updatePreview();
       });
 
-      document.getElementById("themeToggleBtn").addEventListener("click", () => {
-        const isDark = document.documentElement.classList.toggle("dark");
-        document.getElementById("themeIcon").textContent = isDark ? "light_mode" : "dark_mode";
-      });
+      document.getElementById('btn-reset-all').addEventListener('click', () => {
+        state.text = "OPENTEXT";
+        state.fontStyle = "5x5";
+        state.fillGlyph = "█";
+        state.glyphScale = 1;
+        state.fontSize = 13;
+        state.lineHeight = 1.15;
+        state.letterSpacing = 0;
+        state.padding = 20;
+        state.colorMode = "solid";
+        state.solidColor = 92;
+        state.gradientName = "rainbow";
+        state.boxFrame = false;
+        state.animType = "none";
+        state.animSpeed = 1.0;
+        state.scanlines = 35;
+        state.glow = 6;
+        state.zoom = 100;
+        
+        txtInput.value = "OPENTEXT";
+        document.getElementById('slider-glyph-scale').value = 1;
+        document.getElementById('slider-font-size').value = 13;
+        document.getElementById('slider-line-height').value = 1.15;
+        document.getElementById('slider-letter-spacing').value = 0;
+        document.getElementById('slider-padding').value = 20;
+        document.getElementById('slider-anim-speed').value = 1.0;
+        document.getElementById('slider-scanlines').value = 35;
+        document.getElementById('slider-glow').value = 6;
+        document.getElementById('slider-zoom').value = 100;
 
-      document.getElementById("quickCopyPlain").addEventListener("click", () => {
-        const plain = getCurrentPlainLines().join("\n");
-        copyToClipboard(plain, "Copied unstyled plain text");
-      });
+        document.getElementById('val-glyph-scale').textContent = '1x';
+        document.getElementById('val-font-size').textContent = '13px';
+        document.getElementById('val-line-height').textContent = '1.15';
+        document.getElementById('val-letter-spacing').textContent = '0px';
+        document.getElementById('val-padding').textContent = '20px';
+        document.getElementById('val-anim-speed').textContent = '1.0x';
+        document.getElementById('val-scanlines').textContent = '35%';
+        document.getElementById('val-glow').textContent = '6px';
+        document.getElementById('val-zoom').textContent = '100%';
 
-      document.getElementById("quickCopyAnsi").addEventListener("click", () => {
-        const plain = getCurrentPlainLines();
-        const codes = getColorCodes();
-        const ansi = linesToAnsi(plain, state.colorMode, codes);
-        copyToClipboard(ansi, "Copied ANSI terminal escape string");
-      });
-
-      document.getElementById("quickCopyHtml").addEventListener("click", () => {
-        const plain = getCurrentPlainLines();
-        const codes = getColorCodes();
-        const html = linesToHtml(plain, state.colorMode, codes);
-        copyToClipboard(html, "Copied HTML span tags");
-      });
-
-      document.getElementById("quickCopyPyEmbed").addEventListener("click", () => {
-        const snippet = document.getElementById("pythonSnippetBox").textContent;
-        copyToClipboard(snippet, "Copied Python embed script");
-      });
-
-      document.getElementById("copyTerminalTextBtn").addEventListener("click", () => {
-        const plain = getCurrentPlainLines().join("\n");
-        copyToClipboard(plain, "Terminal text copied");
-      });
-
-      document.getElementById("copyActiveFileBtn").addEventListener("click", () => {
-        const content = state.virtualFiles[state.selectedFileKey] || "";
-        copyToClipboard(content, `Copied ${state.selectedFileKey}`);
-      });
-
-      document.getElementById("downloadActiveFileBtn").addEventListener("click", () => {
-        const content = state.virtualFiles[state.selectedFileKey] || "";
-        const fn = state.selectedFileKey.split('/').pop();
-        downloadFile(fn, content, fn.endsWith('.py') ? "text/x-python;charset=utf-8" : "text/plain;charset=utf-8");
-      });
-
-      document.getElementById("copyPythonSnippetBtn").addEventListener("click", () => {
-        copyToClipboard(document.getElementById("pythonSnippetBox").textContent, "Copied Python snippet");
-      });
-
-      document.getElementById("copyHtmlSnippetBtn").addEventListener("click", () => {
-        copyToClipboard(document.getElementById("htmlSnippetBox").textContent, "Copied HTML code");
-      });
-
-      document.getElementById("downloadBashBtn").addEventListener("click", () => {
-        const code = document.getElementById("bashSnippetBox").textContent;
-        downloadFile("banner.sh", code, "application/x-sh;charset=utf-8");
-      });
-
-      document.getElementById("generateZipBtnTop").addEventListener("click", downloadProjectZip);
-      document.getElementById("downloadZipFromExplorer").addEventListener("click", downloadProjectZip);
-      document.getElementById("downloadZipFromTab").addEventListener("click", downloadProjectZip);
-
-      buildVirtualProject();
-      startAnimationLoop();
-    }
-
-    function highlightSelectedSolidColor() {
-      document.querySelectorAll("#solidColorGrid button").forEach(btn => {
-        if (btn.dataset.colorKey === state.solidColor) {
-          btn.classList.add("border-m3-primary", "bg-m3-primaryContainer/20");
-        } else {
-          btn.classList.remove("border-m3-primary", "bg-m3-primaryContainer/20");
-        }
+        document.getElementById('check-box-frame').checked = false;
+        initSwatches();
+        updatePreview();
+        showToast("Settings reset to defaults");
       });
     }
 
-    function highlightSelectedGradient() {
-      document.querySelectorAll("#gradientSchemeGrid button").forEach(btn => {
-        if (btn.dataset.gradientKey === state.gradient) {
-          btn.classList.add("border-m3-primary", "bg-m3-primaryContainer/20");
-        } else {
-          btn.classList.remove("border-m3-primary", "bg-m3-primaryContainer/20");
-        }
-      });
-    }
-
-    window.addEventListener("DOMContentLoaded", initUI);
+    window.addEventListener('DOMContentLoaded', () => {
+      initSwatches();
+      bindUIEvents();
+      updatePreview();
+    });
   </script>
 </body>
 </html>
